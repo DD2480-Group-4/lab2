@@ -1,12 +1,12 @@
 plugins {
-    id("java")
+	id("java")
 }
 
 group = "group4"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
@@ -15,11 +15,11 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet
 	implementation("org.eclipse.jetty:jetty-servlet:7.0.2.v20100331")
 
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.assertj:assertj-core:3.25.1")
+	testImplementation(platform("org.junit:junit-bom:5.9.1"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.assertj:assertj-core:3.25.1")
 }
 
 tasks.test {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }

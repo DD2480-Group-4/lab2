@@ -17,33 +17,33 @@ import java.io.IOException;
 public class Main extends AbstractHandler
 {
 	@Override
-    public void handle(String target,
-                       Request baseRequest,
-                       HttpServletRequest request,
-                       HttpServletResponse response)
-        throws IOException, ServletException
-    {
-        response.setContentType("text/html;charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
+	public void handle(String target,
+					   Request baseRequest,
+					   HttpServletRequest request,
+					   HttpServletResponse response)
+		throws IOException, ServletException
+	{
+		response.setContentType("text/html;charset=utf-8");
+		response.setStatus(HttpServletResponse.SC_OK);
+		baseRequest.setHandled(true);
 
-        System.out.println(target);
+		System.out.println(target);
 
-        // here you do all the continuous integration tasks
-        // for example
-        // 1st clone your repository
-        // 2nd compile the code
+		// here you do all the continuous integration tasks
+		// for example
+		// 1st clone your repository
+		// 2nd compile the code
 
-        response.getWriter().println("CI job done");
-    }
+		response.getWriter().println("CI job done");
+	}
  
-    // used to start the CI server in command line
-    public static void main(String[] args) throws Exception
-    {
-        Server server = new Server(8080);
-        server.setHandler(new Main());
-        server.start();
-        server.join();
-    }
+	// used to start the CI server in command line
+	public static void main(String[] args) throws Exception
+	{
+		Server server = new Server(8080);
+		server.setHandler(new Main());
+		server.start();
+		server.join();
+	}
 
 }
