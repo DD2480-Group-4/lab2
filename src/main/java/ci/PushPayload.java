@@ -11,6 +11,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+/** Represent payload from GitHub webhook on push events
+ * 
+ */
 public class PushPayload {
 
     private String cloneUrl;
@@ -19,6 +23,10 @@ public class PushPayload {
     private Commit[] commits;
     private Sender sender;
 
+    /**
+     * Creates a PushPayload object
+     * @param requestJsonPayload Payload json from webhook HTTP request
+     */
     public PushPayload(String requestJsonPayload) throws JsonProcessingException, IOException {
         JsonNode payloadNode = new ObjectMapper().readTree(requestJsonPayload);
 
@@ -57,32 +65,67 @@ public class PushPayload {
         
     }
 
+
+    /** Gets branch
+     * @return Name of git branch in payload
+    */
     public String getBranch() {
         return branch;
     }
 
+    /** Gets clone url
+     * @return Url to clone repository
+     */
     public String getCloneUrl() {
         return cloneUrl;
     }
 
+    /** Gets time for git push
+     * @return Local time for push event
+     */
     public LocalDateTime getPushedAt() {
         return pushedAt;
     }
 
+    /** Gets all commits in push
+     * @return Array of all commit object in push
+     */
     public Commit[] getCommits() {
         return commits;
     }
 
+    /** Gets sender
+     * @return Sender object for push event
+     */
     public Sender getSender() {
         return sender;
     }
 
+    /**
+     * Commit author information
+     * @param name Name of author
+     * @param userName Username of author
+     * @param email email of author
+     */
     public record Author(String name, String userName, String email) {
     }
 
+    /**
+     * Git commit information
+     * @param message Commit message
+     * @param author Commit author
+     * @param url Commit url
+     * @param modifiedFiles Paths to modified files in commit
+     */
     public record Commit(String message, Author author, String url, String[] modifiedFiles) {
     }
 
+    /**
+     * GitHub user triggering webhook event
+     * @name Name of sender
+     * @url GitHub user Url
+     * @avatarUrl GitHub avatar of user
+     */
     public record Sender(String name, String url, String avatarUrl) {
     }
 }
