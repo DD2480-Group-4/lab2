@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-
+/** Main executable for Continuous-Integration handler
+ */
 public class Main extends AbstractHandler
 {
+
 	@Override
 	public void handle(
 		String target,
@@ -33,6 +35,10 @@ public class Main extends AbstractHandler
 		response.getWriter().println("CI job done");
 	}
 
+	/**
+	 * Prints information about PushPayload object received from GitHub webhook to standard output
+	 * @param payload Parsed payload object
+	 */
 	private void printPushPayload(PushPayload payload)
 	{
 		System.out.println("-------------------------");
@@ -52,7 +58,8 @@ public class Main extends AbstractHandler
 		System.out.println(sb.toString());
 	}
  
-	// used to start the CI server in command line
+	/** Initialize CI server 
+	 */
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(8080);
 		server.setHandler(new Main());
