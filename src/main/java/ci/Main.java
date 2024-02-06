@@ -4,15 +4,14 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 
+import ci.PushPayload.Commit;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/** 
- Skeleton of a ContinuousIntegrationServer which acts as webhook
- See the Jetty documentation for API documentation of those classes.
-*/
+
 public class Main extends AbstractHandler
 {
 	@Override
@@ -26,12 +25,23 @@ public class Main extends AbstractHandler
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
 
-		System.out.println(target);
+		PushPayload payload = new PushPayload(request.getReader().readLine());
 
-		// here you do all the continuous integration tasks
-		// for example
-		// 1st clone your repository
-		// 2nd compile the code
+		System.out.println("-------------------------");
+		StringBuilder sb = new StringBuilder();
+		sb.append("CI job started\n");
+		sb.append("Repository: ").append(payload.getCloneUrl()).append("\n");
+		sb.append("Branch: ").append(payload.getBranch()).append("\n");
+		sb.append("Pushed at: ").append(payload.getPushedAt()).append("\n");
+		sb.append("Sender: ").append(payload.getSender().name()).append("\n");
+		sb.append("Commits: \n");
+		for (Commit commit : payload.getCommits()) {
+			sb.append("\t");
+			sb.append("Author: ").append(commit.author().name());
+			sb.append(" | Message: ").append(commit.message()).append("\n");
+		}
+		
+		System.out.println(sb.toString());
 
 		response.getWriter().println("CI job done");
 	}
