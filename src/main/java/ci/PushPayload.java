@@ -135,9 +135,9 @@ public class PushPayload {
 	/**
 	 * GitHub user triggering webhook event
 	 * 
-	 * @name Name of sender
-	 * @url GitHub user Url
-	 * @avatarUrl GitHub avatar of user
+	 * @param name Name of sender
+	 * @param url GitHub user Url
+	 * @param avatarUrl GitHub avatar of user
 	 */
 	public record Sender(String name, String url, String avatarUrl) {
 	}
