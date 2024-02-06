@@ -15,7 +15,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-servlet
 	implementation("org.eclipse.jetty:jetty-servlet:7.0.2.v20100331")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.8.9")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.8.9")
 
 	testImplementation(platform("org.junit:junit-bom:5.9.1"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
