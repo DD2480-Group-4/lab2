@@ -27,6 +27,14 @@ public class Main extends AbstractHandler
 
 		PushPayload payload = new PushPayload(request.getReader().readLine());
 
+		printPushPayload(payload);
+		
+
+		response.getWriter().println("CI job done");
+	}
+
+	private void printPushPayload(PushPayload payload)
+	{
 		System.out.println("-------------------------");
 		StringBuilder sb = new StringBuilder();
 		sb.append("CI job started\n");
@@ -42,8 +50,6 @@ public class Main extends AbstractHandler
 		}
 		
 		System.out.println(sb.toString());
-
-		response.getWriter().println("CI job done");
 	}
  
 	// used to start the CI server in command line
