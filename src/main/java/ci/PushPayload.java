@@ -17,11 +17,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class PushPayload {
 
-	private String cloneUrl;
-	private String branch;
-	private LocalDateTime pushedAt;
-	private Commit[] commits;
-	private Sender sender;
+	private final String cloneUrl;
+	private final String branch;
+	private final LocalDateTime pushedAt;
+	private final Commit[] commits;
+	private final Sender sender;
 
 	/**
 	 * Creates a PushPayload object
