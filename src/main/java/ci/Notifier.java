@@ -11,13 +11,15 @@ import java.net.http.HttpResponse;
  */
 public class Notifier {
 	private final PushPayload payload;
+	private final HttpClient client;
 
 	/**
 	 *  Creates a notifier object with push payload-specific details
 	 */
-	public Notifier(PushPayload payload) {
+	public Notifier(PushPayload payload, HttpClient client) {
 		this.payload = payload;
-	}
+        this.client = client;
+    }
 
 	/**
 	 *  Function that generates a commit status request and sends it to the GitHub API.
@@ -28,14 +30,15 @@ public class Notifier {
 	 *  @return true if HTTP response code is 201 (successfully updated commit status), false otherwise
 	 */
 	public boolean setCommitStatus(CommitStatuses state, String description, String buildInfoUrl) throws IOException, InterruptedException {
-		// Generate GitHub commit status request
 		PushPayload.Commit headCommit = payload.getCommits()[payload.getCommits().length - 1];
-		String apiUrl = "https://api.github.com/repos/" + payload.getRepo() + "/statuses/" + headCommit.sha();
-		String jsonData = "{\"state\": \"" + state + "\", \"description\": \"" + description + "\", \"target_url\": \"" + buildInfoUrl + "\"}";
+		String sha = headCommit.sha();
+		// Generate GitHub commit status request
+		String apiUrl = getApiUrl(sha);
+		String jsonData = getJsonData(state, description, buildInfoUrl);
+
 		String token = System.getenv("GITHUB_COMMIT_STATUS_TOKEN");
 
 		// HTTP request skeleton from: https://openjdk.org/groups/net/httpclient/recipes.html
-		HttpClient client = HttpClient.newBuilder().build();
 		HttpRequest request = HttpRequest.newBuilder()
 			.uri(URI.create(apiUrl))
 			.header("Accept", "application/vnd.github+json")
@@ -43,6 +46,7 @@ public class Notifier {
 			.header("X-GitHub-Api-Version", "2022-11-28")
 			.POST(HttpRequest.BodyPublishers.ofString(jsonData))
 			.build();
+
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
 		// Verify if commit status update was successful
@@ -55,4 +59,25 @@ public class Notifier {
 			return true;
 		}
 	}
+
+	/**
+	 *	Function that generates API Url to interact with GitHub API to generate commit status.
+	 *  @param sha Commit hash (id)
+	 * 	@return	API Url
+	 */
+	public String getApiUrl(String sha) {
+		return "https://api.github.com/repos/" + payload.getRepo() + "/statuses/" + sha;
+	}
+
+	/**
+	 *  Function that generates json data used in HTTP request body required by GitHub API to generate commit statuses.
+	 * 	@param state The state of the commit status (error, failure, pending or success)
+	 * 	@param description Description to give context regarding commit status state
+	 * 	@param buildInfoUrl URL to build info regarding the commit
+	 *  @return json data
+	 */
+	public String getJsonData(CommitStatuses state, String description, String buildInfoUrl) {
+		return "{\"state\": \"" + state + "\", \"description\": \"" + description + "\", \"target_url\": \"" + buildInfoUrl + "\"}";
+	}
+
 }
