@@ -1,14 +1,19 @@
 package ci;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.CreateBranchCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.tooling.BuildException;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ResultHandler;
 import org.gradle.tooling.internal.consumer.BlockingResultHandler;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.Consumer;
 
 /**
@@ -81,6 +86,86 @@ public class Builder implements AutoCloseable {
 			return CommitStatuses.success;
 		} catch (BuildException ignored) {
 			return CommitStatuses.failure;
+		}
+	}
+
+	boolean deleteAfter = false;
+	/**
+	 * Clones repository using provided Url into temporary directory
+	 * Checks out the provided branch
+	 * Deletes the temporary directory at the end
+	 *
+	 * @param targetRepoUrl Url to repository to clone
+	 * @param targetBranch Branch from repository to be checked out
+	 */
+	public void cloneTargetRepo(String targetRepoUrl, String targetBranch) throws GitAPIException {
+		String currentDir = System.getProperty("user.dir");
+		String cloneTargetDirPath = currentDir.concat("/temp");
+		Git git;
+
+		File dir = new File(cloneTargetDirPath);
+		// Deletes the temp directory if it already exists, then creates a new temp dir
+		deleteDirectory(dir);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+
+		try {
+			// Clone
+			System.out.println("Cloning " + targetRepoUrl + " into " + cloneTargetDirPath);
+			git = Git.cloneRepository()
+				.setURI(targetRepoUrl)
+				.setDirectory(Paths.get(cloneTargetDirPath).toFile())
+				.call();
+			System.out.println("Completed Cloning");
+		} catch (GitAPIException e) {
+			System.out.println("Exception occurred while cloning repository");
+			e.printStackTrace();
+			return;
+		}
+
+		try {
+			// Checkout branch
+			System.out.println("Checking out branch " + targetBranch + " of repo " + targetRepoUrl);
+			git.branchCreate()
+				.setName(targetBranch)
+				.setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+				.setStartPoint("origin/" + targetBranch)
+				.call();
+			git.checkout()
+				.setName(targetBranch)
+				.call();
+			System.out.println("Completed Branch-Checkout");
+		} catch (GitAPIException e) {
+			System.out.println("Exception occurred while checking out branch");
+			e.printStackTrace();
+		} finally {
+			// Close the Git repository to release resources
+			if (git != null && git.getRepository() != null) {
+				git.getRepository().close();
+			}
+		}
+
+		// Delete the temp directory if needed
+		if (deleteAfter) {
+			deleteDirectory(dir);
+		}
+	}
+
+	/**
+	 * Deletes a given directory if it exists
+	 *
+	 * @param directory Directory to be deleted
+	 */
+	public void deleteDirectory(File directory) {
+		if (directory.exists()) {
+			try {
+				FileUtils.deleteDirectory(directory);
+				System.out.println("Temp directory deleted");
+			} catch (IOException e) {
+				System.out.println("Exception occurred while deleting temp directory");
+				e.printStackTrace();
+			}
 		}
 	}
 }
