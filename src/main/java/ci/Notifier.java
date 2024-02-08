@@ -14,20 +14,20 @@ public class Notifier {
 	private final HttpClient client;
 
 	/**
-	 *  Creates a notifier object with push payload-specific details
+	 * Creates a notifier object with push payload-specific details
 	 */
 	public Notifier(PushPayload payload, HttpClient client) {
 		this.payload = payload;
-        this.client = client;
-    }
+		this.client = client;
+	}
 
 	/**
-	 *  Function that generates a commit status request and sends it to the GitHub API.
+	 * Function that generates a commit status request and sends it to the GitHub API.
 	 *
-	 *  @param state The state of the commit status (error, failure, pending or success)
-	 *  @param description Description to give context regarding commit status state
-	 *  @param buildInfoUrl URL to build info regarding the commit
-	 *  @return true if HTTP response code is 201 (successfully updated commit status), false otherwise
+	 * @param state        The state of the commit status (error, failure, pending or success)
+	 * @param description  Description to give context regarding commit status state
+	 * @param buildInfoUrl URL to build info regarding the commit
+	 * @return true if HTTP response code is 201 (successfully updated commit status), false otherwise
 	 */
 	public boolean setCommitStatus(CommitStatuses state, String description, String buildInfoUrl) throws IOException, InterruptedException {
 		PushPayload.Commit headCommit = payload.getCommits()[payload.getCommits().length - 1];
@@ -61,20 +61,22 @@ public class Notifier {
 	}
 
 	/**
-	 *	Function that generates API Url to interact with GitHub API to generate commit status.
-	 *  @param sha Commit hash (id)
-	 * 	@return	API Url
+	 * Function that generates API Url to interact with GitHub API to generate commit status.
+	 *
+	 * @param sha Commit hash (id)
+	 * @return API Url
 	 */
 	public String getApiUrl(String sha) {
 		return "https://api.github.com/repos/" + payload.getRepo() + "/statuses/" + sha;
 	}
 
 	/**
-	 *  Function that generates json data used in HTTP request body required by GitHub API to generate commit statuses.
-	 * 	@param state The state of the commit status (error, failure, pending or success)
-	 * 	@param description Description to give context regarding commit status state
-	 * 	@param buildInfoUrl URL to build info regarding the commit
-	 *  @return json data
+	 * Function that generates json data used in HTTP request body required by GitHub API to generate commit statuses.
+	 *
+	 * @param state        The state of the commit status (error, failure, pending or success)
+	 * @param description  Description to give context regarding commit status state
+	 * @param buildInfoUrl URL to build info regarding the commit
+	 * @return json data
 	 */
 	public String getJsonData(CommitStatuses state, String description, String buildInfoUrl) {
 		return "{\"state\": \"" + state + "\", \"description\": \"" + description + "\", \"target_url\": \"" + buildInfoUrl + "\"}";
