@@ -16,6 +16,11 @@ dependencies {
 	implementation("org.eclipse.jetty:jetty-servlet:7.0.2.v20100331")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.8.9")
 
+	implementation("org.gradle:gradle-tooling-api:7.3-20210825160000+0000")
+	//Dependency for gradle-tooling
+	implementation("org.slf4j:slf4j-simple:2.1.0-alpha1")
+
+
 	testImplementation(platform("org.junit:junit-bom:5.9.1"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core:3.25.1")
