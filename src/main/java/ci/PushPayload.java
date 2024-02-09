@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  */
 public class PushPayload {
-
+	private final String repo;
 	private final String cloneUrl;
 	private final String branch;
 	private final LocalDateTime pushedAt;
@@ -31,6 +31,7 @@ public class PushPayload {
 	public PushPayload(String requestJsonPayload) throws JsonProcessingException, IOException {
 		JsonNode payloadNode = new ObjectMapper().readTree(requestJsonPayload);
 
+		repo = payloadNode.get("repository").get("full_name").asText();
 		cloneUrl = payloadNode.get("repository").get("clone_url").asText();
 		branch = payloadNode.get("ref").asText().replace("refs/heads/", "");
 
@@ -42,6 +43,7 @@ public class PushPayload {
 		int commitIndex = 0;
 		for (JsonNode commitNode : commitsNode) {
 
+			String sha = commitNode.get("id").asText();
 			String message = commitNode.get("message").asText();
 			String url = commitNode.get("url").asText();
 
@@ -56,7 +58,7 @@ public class PushPayload {
 				modifiedFilesList.add(modifiedFileNode.asText());
 			}
 			String[] modifiedFiles = modifiedFilesList.toArray(new String[0]);
-			commits[commitIndex++] = new Commit(message, author, url, modifiedFiles);
+			commits[commitIndex++] = new Commit(sha, message, author, url, modifiedFiles);
 		}
 
 		sender = new Sender(
@@ -65,6 +67,13 @@ public class PushPayload {
 				payloadNode.get("sender").get("avatar_url").asText());
 
 	}
+
+	/**
+	 * Gets repository
+	 *
+	 * @return Full repository name (owner + repo)
+	 */
+	public String getRepo() { return repo; }
 
 	/**
 	 * Gets branch
@@ -123,13 +132,14 @@ public class PushPayload {
 
 	/**
 	 * Git commit information
-	 * 
+	 *
+	 * @param sha			Commit hash (id)
 	 * @param message       Commit message
 	 * @param author        Commit author
 	 * @param url           Commit url
 	 * @param modifiedFiles Paths to modified files in commit
 	 */
-	public record Commit(String message, Author author, String url, String[] modifiedFiles) {
+	public record Commit(String sha, String message, Author author, String url, String[] modifiedFiles) {
 	}
 
 	/**
