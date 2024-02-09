@@ -1,9 +1,11 @@
 package ci;
 
 import org.apache.commons.io.FileUtils;
+import org.gradle.tooling.BuildException;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ResultHandler;
+import org.gradle.tooling.internal.consumer.BlockingResultHandler;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -64,5 +66,21 @@ public class Builder implements AutoCloseable {
 	public void close() throws IOException {
 		FileUtils.deleteDirectory(projectDir.resolve(".gradle").toFile());
 		FileUtils.deleteDirectory(projectDir.resolve("build").toFile());
+	}
+
+	/**
+	 * Try to compile the project.
+	 * TODO Run tests also
+	 * @return {@link CommitStatuses#failure} if the build fails, {@link CommitStatuses#success} otherwise.
+	 */
+	public CommitStatuses build() {
+		var handler = new BlockingResultHandler<>(Void.class);
+		try {
+			runTasks(launcher -> launcher.forTasks("build"), handler);
+			handler.getResult();
+			return CommitStatuses.success;
+		} catch (BuildException ignored) {
+			return CommitStatuses.failure;
+		}
 	}
 }

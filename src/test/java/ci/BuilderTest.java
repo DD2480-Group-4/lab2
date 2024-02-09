@@ -1,8 +1,6 @@
 package ci;
 
 import org.assertj.core.api.Assertions;
-import org.gradle.tooling.BuildException;
-import org.gradle.tooling.internal.consumer.BlockingResultHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +19,7 @@ public class BuilderTest {
 	void buildProject() {
 		var buildDir = Path.of("./src/test/resources/build_success");
 		try (var builder = new Builder(buildDir)) {
-			var handler = new BlockingResultHandler<>(Object.class);
-			builder.runTasks(
-				launcher -> launcher.forTasks("build"),
-				handler
-			);
-			Assertions.assertThat(handler.getResult()).isNull();
+			Assertions.assertThat(builder.build()).isEqualTo(CommitStatuses.success);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -44,17 +37,7 @@ public class BuilderTest {
 	void buildFail() {
 		var buildDir = Path.of("./src/test/resources/build_fail");
 		try (var builder = new Builder(buildDir)) {
-			var handler = new BlockingResultHandler<>(Object.class);
-			builder.runTasks(
-				launcher -> launcher.forTasks("build"),
-				handler
-			);
-			boolean built = false;
-			try {
-				handler.getResult();
-				built = true;
-			} catch (BuildException ignored) {}
-			Assertions.assertThat(built).isFalse();
+			Assertions.assertThat(builder.build()).isEqualTo(CommitStatuses.failure);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
