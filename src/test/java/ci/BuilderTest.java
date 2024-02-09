@@ -11,6 +11,11 @@ import java.nio.file.Path;
 
 public class BuilderTest {
 
+	/**
+	 * BuilderTest:
+	 * Attempts to build a Gradle project.
+	 * The project is expected to compile successfully.
+	 */
 	@Test
 	@DisplayName("Self-build test")
 	void buildProject() {
@@ -29,6 +34,11 @@ public class BuilderTest {
 		Assertions.assertThat(buildDir.resolve("build").toFile().exists()).isFalse();
 	}
 
+	/**
+	 * BuilderTest:
+	 * Attempts to compile a Gradle project with a syntax error.
+	 * The compilation is expected to fail.
+	 */
 	@Test
 	@DisplayName("Self-build failure")
 	void buildFail() {
