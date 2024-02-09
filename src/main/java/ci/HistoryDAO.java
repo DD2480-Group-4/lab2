@@ -4,6 +4,8 @@ import java.io.File;
 import java.sql.*;
 
 import ci.PushPayload.Commit;
+import ci.PushPayload.Author;
+import ci.PushPayload.Sender;
 
 public class HistoryDAO {
 
@@ -46,67 +48,86 @@ public class HistoryDAO {
 		}
 	}
 
-	public int addAuthor(String name, String username, String email) throws SQLException {
+	public int addAuthor(Author author) throws SQLException {
 
 		Connection connection = getConnection();
 
 		//Check if the author already exists
 		PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM authors WHERE email = ?");
-		getStatement.setString(1, email);
-		ResultSet rs = getStatement.executeQuery();
-		if (rs.next()) {
+		getStatement.setString(1, author.email());
+		ResultSet resultSet = getStatement.executeQuery();
+		if (resultSet.next()) {
 			connection.close();
-			return rs.getInt("id");
+			return resultSet.getInt("id");
 		}
 
 		//Insert the author
 		PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO authors (name, username, email) VALUES (?, ?, ?)");
-		insertStatement.setString(1, name);
-		insertStatement.setString(2, username);
-		insertStatement.setString(3, email);
+		insertStatement.setString(1, author.name());
+		insertStatement.setString(2, author.userName());
+		insertStatement.setString(3, author.email());
 		insertStatement.execute();
 
-		rs = insertStatement.getGeneratedKeys();
-		int id = rs.getInt(1);
+		resultSet = insertStatement.getGeneratedKeys();
+		int id = resultSet.getInt(1);
 		connection.close();
 		return id;
 	}
 
-	public int addSender(String login, String url, String avatarUrl) throws SQLException {
+	public int addSender(Sender sender) throws SQLException {
 
 		Connection connection = getConnection();
 
 		//Check if the sender already exists
 		PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM senders WHERE login = ?");
-		getStatement.setString(1, login);
-		ResultSet rs = getStatement.executeQuery();
-		if (rs.next()) {
+		getStatement.setString(1, sender.name());
+		ResultSet resultSet = getStatement.executeQuery();
+		if (resultSet.next()) {
 			connection.close();
-			return rs.getInt("id");
+			return resultSet.getInt("id");
 		}
 
 		//Insert the sender
 		PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO senders (login, url, avatar_url) VALUES (?, ?, ?)");
-		insertStatement.setString(1, login);
-		insertStatement.setString(2, url);
-		insertStatement.setString(3, avatarUrl);
+		insertStatement.setString(1, sender.name());
+		insertStatement.setString(2, sender.url());
+		insertStatement.setString(3, sender.avatarUrl());
 		insertStatement.execute();
 
-		rs = insertStatement.getGeneratedKeys();
-		int id = rs.getInt(1);
+		resultSet = insertStatement.getGeneratedKeys();
+		int id = resultSet.getInt(1);
 		connection.close();
 		return id;
 	}
 
-	// public int addCommit(Commit commit) throws SQLException {
+	public int addCommit(Commit commit) throws SQLException {
 
-	// 	Connection connection = getConnection();
+		Connection connection = getConnection();
 
-	// 	//Check if the commit already exists
-	// 	PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM commits WHERE sha = ?");
-	// 	ResultSet rs = getStatement.executeQuery();
+		//Check if the commit already exists
+		PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM commits WHERE sha = ?");
+		getStatement.setString(1, commit.sha());
+		ResultSet resultSet = getStatement.executeQuery();
+		if (resultSet.next()) {
+			connection.close();
+			return resultSet.getInt("id");
+		}
 
+		//Insert the commit
+		int authorId = addAuthor(commit.author());
+		String modifiedFiles = String.join(",", commit.modifiedFiles());
 
+		PreparedStatement insertStatement = connection.prepareStatement("INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES (?, ?, ?, ?, ?)");
+		insertStatement.setString(1, commit.sha());
+		insertStatement.setString(2, commit.message());
+		insertStatement.setInt(3, authorId);
+		insertStatement.setString(4, commit.url());
+		insertStatement.setString(5, modifiedFiles);
+		insertStatement.execute();
 		
-	// }
+		resultSet = insertStatement.getGeneratedKeys();
+		int id = resultSet.getInt(1);
+		connection.close();
+		return id;
+	}
 }
