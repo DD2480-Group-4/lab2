@@ -19,6 +19,10 @@ dependencies {
 	implementation("org.gradle:gradle-tooling-api:7.3-20210825160000+0000")
 	implementation("ch.qos.logback:logback-classic:1.4.14")
 
+	// https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+	implementation("org.xerial:sqlite-jdbc:3.45.1.0")
+	implementation("org.slf4j:slf4j-api:1.7.25")
+
 	testImplementation(platform("org.junit:junit-bom:5.9.1"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core:3.25.1")
