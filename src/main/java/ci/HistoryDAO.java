@@ -200,7 +200,7 @@ public class HistoryDAO {
 		List<Commit> commits = new ArrayList<Commit>();
 		while (resultSet.next()) {
 			Author author = getAuthor(resultSet.getInt("authorId"));
-			String[] modifiedFiles = resultSet.getString("modifiedFiles").split(", ");
+			String[] modifiedFiles = resultSet.getString("modifiedFiles").split(",");
 
 			commits.add(new Commit(resultSet.getString("sha"),
 					resultSet.getString("message"),

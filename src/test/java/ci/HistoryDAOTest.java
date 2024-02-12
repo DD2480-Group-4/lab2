@@ -35,9 +35,9 @@ public class HistoryDAOTest {
 				"INSERT INTO authors (name, username, email) VALUES ('Mr Bean', 'mrbean', 'beanAndTeddy@funny.org')");
 
 		statement.addBatch(
-				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha1', 'Commit1', 1, 'commitUrl1', 'File1.txt, File2.txt')");
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha1', 'Commit1', 1, 'commitUrl1', 'File1.txt,File2.txt')");
 		statement.addBatch(
-				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha2', 'Commit2', 2, 'commitUrl2', 'File1.txt, File2.txt')");
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha2', 'Commit2', 2, 'commitUrl2', 'File1.txt,File2.txt')");
 		statement.addBatch(
 				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha3', 'Commit3', 1, 'commitUrl3', 'File2.txt')");
 
@@ -287,5 +287,36 @@ public class HistoryDAOTest {
 		ci.PushPayload.Author author = historyDAO.getAuthor(id);
 		Assertions.assertThat(author).isNotNull();
 		Assertions.assertThat(author).isEqualTo(authorToAdd);
+	}
+
+	@Test
+	@DisplayName("Add Sender")
+	void addSender_SenderAdded() throws SQLException
+	{
+		ci.PushPayload.Sender senderToAdd = new ci.PushPayload.Sender("test", "testUrl", "testAvatarUrl");
+		int id = historyDAO.addSender(senderToAdd);
+
+		ci.PushPayload.Sender sender = historyDAO.getSender(id);
+		Assertions.assertThat(sender).isNotNull();
+		Assertions.assertThat(sender).isEqualTo(senderToAdd);
+	}
+
+	@Test
+	@DisplayName("Add Commit")
+	void addCommit_CommitAdded() throws SQLException
+	{
+		ci.PushPayload.Author authorToAdd = new ci.PushPayload.Author("Test Tester", "test", "test@example,com");
+		ci.PushPayload.Commit commitToAdd = new ci.PushPayload.Commit("sha4", "Test Commit", authorToAdd, "testUrl", new String[]{"File1.txt", "File2.txt"});
+		int id = historyDAO.addCommit(commitToAdd);
+
+		Connection connection = historyDAO.getConnection();
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT * FROM commits WHERE id = " + id);
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("sha")).isEqualTo("sha4");
+		Assertions.assertThat(resultSet.getString("message")).isEqualTo("Test Commit");
+		Assertions.assertThat(resultSet.getInt("authorId")).isEqualTo(historyDAO.addAuthor(authorToAdd));
+		Assertions.assertThat(resultSet.getString("url")).isEqualTo("testUrl");
+		Assertions.assertThat(resultSet.getString("modifiedFiles")).isEqualTo("File1.txt,File2.txt");
 	}
 }
