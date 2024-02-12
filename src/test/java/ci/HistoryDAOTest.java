@@ -7,6 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -110,5 +111,33 @@ public class HistoryDAOTest {
 		Assertions.assertThat(sender).isNull();
 	}
 
-	
+	@Test 
+	void getCommitsForHistory_CommitsExists_ReturnsCommits() throws SQLException
+	{
+		List<ci.PushPayload.Commit> commits = historyDAO.getCommitsForHistory(1);
+		Assertions.assertThat(commits).hasSize(2);
+
+		Assertions.assertThat(commits.get(0).sha()).isEqualTo("sha1");
+		Assertions.assertThat(commits.get(0).message()).isEqualTo("Commit1");
+		Assertions.assertThat(commits.get(0).author().name()).isEqualTo("John Doe");
+		Assertions.assertThat(commits.get(0).author().userName()).isEqualTo("johndoe");
+		Assertions.assertThat(commits.get(0).author().email()).isEqualTo("john@doe.com");
+		Assertions.assertThat(commits.get(0).url()).isEqualTo("commitUrl1");
+		Assertions.assertThat(commits.get(0).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
+
+		Assertions.assertThat(commits.get(1).sha()).isEqualTo("sha2");
+		Assertions.assertThat(commits.get(1).message()).isEqualTo("Commit2");
+		Assertions.assertThat(commits.get(1).author().name()).isEqualTo("Mr Bean");
+		Assertions.assertThat(commits.get(1).author().userName()).isEqualTo("mrbean");
+		Assertions.assertThat(commits.get(1).author().email()).isEqualTo("beanAndTeddy@funny.org");
+		Assertions.assertThat(commits.get(1).url()).isEqualTo("commitUrl2");
+		Assertions.assertThat(commits.get(1).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
+	}
+
+	@Test 
+	void getCommitsForHistory_CommitsDoesNotExists_ReturnsEmptyList() throws SQLException
+	{
+		List<ci.PushPayload.Commit> commits = historyDAO.getCommitsForHistory(15);
+		Assertions.assertThat(commits).hasSize(0);
+	}
 }
