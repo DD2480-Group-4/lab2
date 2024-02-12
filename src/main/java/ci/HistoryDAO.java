@@ -17,11 +17,11 @@ public class HistoryDAO {
 	public HistoryDAO(String databaseName) throws SQLException {
 		this.databaseName = databaseName;
 
-		connection = getConnection();
 		// Build the database if it does not exist
 		File databaseFile = new File(databaseName);
 		if (!databaseFile.exists()) {
-
+			
+			connection = getConnection();
 			Statement statement = connection.createStatement();
 
 			statement.addBatch(
@@ -37,10 +37,18 @@ public class HistoryDAO {
 
 			statement.executeBatch();
 		}
+		else
+		{
+			connection = getConnection();
+		}
 
 	}
 
-	private Connection getConnection() throws SQLException {
+	public Connection getConnection() throws SQLException {
+
+		if(connection != null && !connection.isClosed())
+			return connection;
+
 		try {
 			Class.forName("org.sqlite.JDBC");
 			return DriverManager.getConnection("jdbc:sqlite:" + databaseName);
