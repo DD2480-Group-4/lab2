@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -22,6 +23,33 @@ public class HistoryDAOTest {
 	@BeforeEach
 	void testSetup() throws SQLException {
 		historyDAO = new HistoryDAO(testDatabaseName);
+
+		Connection connection = historyDAO.getConnection();
+		Statement statement = connection.createStatement();
+
+		statement
+				.addBatch("INSERT INTO authors (name, username, email) VALUES ('John Doe', 'johndoe', 'john@doe.com')");
+		statement.addBatch(
+				"INSERT INTO authors (name, username, email) VALUES ('Mr Bean', 'mrbean', 'beanAndTeddy@funny.org')");
+
+		statement.addBatch(
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha1', 'Commit1', 1, 'commitUrl1', 'File1.txt, File2.txt')");
+		statement.addBatch(
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha2', 'Commit2', 2, 'commitUrl2', 'File1.txt, File2.txt')");
+		statement.addBatch(
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha3', 'Commit3', 1, 'commitUrl3', 'File2.txt')");
+
+		statement.addBatch("INSERT INTO senders (login, url, avatarUrl) VALUES ('johndoe', 'johndoeUrl', 'johndoeAvatarUrl')");
+
+		statement.addBatch("INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog') VALUES (1, 1, 'Build Log 1', 10, 10, 'All test passed')");
+		statement.addBatch("INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog') VALUES (1, 0, 'Build Log 2', 10, 5, '5 test failed')");
+
+		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 1)");
+		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 2)");
+		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (2, 3)");
+
+
+		statement.executeBatch();
 	}
 
 	@AfterEach
@@ -35,7 +63,6 @@ public class HistoryDAOTest {
 		Connection connection = historyDAO.getConnection();
 		DatabaseMetaData metaData = connection.getMetaData();
 		String[] types = { "TABLE" };
-		// Retrieving the columns in the database
 		ResultSet resultSet = metaData.getTables(null, null, "%", types);
 
 		Assertions.assertThat(resultSet.next()).isTrue();
