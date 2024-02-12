@@ -5,6 +5,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 import ci.PushPayload.Commit;
 import ci.PushPayload.Author;
 import ci.PushPayload.Sender;
@@ -76,8 +78,6 @@ public class HistoryDAO {
 
 	public int addSender(Sender sender) throws SQLException {
 
-		
-
 		// Check if the sender already exists
 		PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM senders WHERE login = ?");
 		getStatement.setString(1, sender.name());
@@ -102,8 +102,6 @@ public class HistoryDAO {
 	}
 
 	public int addCommit(Commit commit) throws SQLException {
-
-		
 
 		// Check if the commit already exists
 		PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM commits WHERE sha = ?");
@@ -135,8 +133,6 @@ public class HistoryDAO {
 
 	public int addHistory(BuildInfo buildInfo) throws SQLException {
 
-		
-
 		// Add sender and commits to the database
 		int senderId = addSender(buildInfo.getSender());
 		List<Integer> commitIds = new ArrayList<>();
@@ -167,13 +163,61 @@ public class HistoryDAO {
 			insertHistoryCommits.execute();
 		}
 
-		;
 		return historyId;
+	}
+
+	public Author GetAuthor(int id) throws SQLException {
+		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM authors WHERE id=?");
+		preparedStatement.setInt(1, id);
+		ResultSet resultSet = preparedStatement.executeQuery();
+
+		if (resultSet.next()) {
+			return new Author(resultSet.getString("name"),
+					resultSet.getString("username"),
+					resultSet.getString("email"));
+		}
+
+		return null;
+	}
+
+	public List<Commit> GetCommitsForHistory(int historyId) throws SQLException {
+		PreparedStatement preparedStatement = connection.prepareStatement(
+				"SELECT id, sha, message, authorId, url, modifiedFiles FROM commits JOIN historyCommits ON id = commitId WHERE historyId = ?");
+		preparedStatement.setInt(1, historyId);
+		ResultSet resultSet = preparedStatement.executeQuery();
+
+		List<Commit> commits = new ArrayList<Commit>();
+		while (resultSet.next()) {
+			Author author = GetAuthor(resultSet.getInt("authorId"));
+			String[] modifiedFiles = resultSet.getString("modifiedFiles").split(",");
+
+			commits.add(new Commit(resultSet.getString("sha"),
+					resultSet.getString("message"),
+					author,
+					resultSet.getString("url"),
+					modifiedFiles));
+
+		}
+
+		return commits;
+	}
+
+	public Sender GetSender(int id) throws SQLException {
+		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM senders WHERE id=?");
+		preparedStatement.setInt(1, id);
+		ResultSet resultSet = preparedStatement.executeQuery();
+
+		if (resultSet.next()) {
+			return new Sender(resultSet.getString("login"),
+					resultSet.getString("url"),
+					resultSet.getString("avatarUrl"));
+		}
+
+		return null;
 	}
 
 	public List<BuildInfo> getAllHistory() throws SQLException {
 
-		
 		List<BuildInfo> history = new ArrayList<>();
 
 		Statement statement = connection.createStatement();
@@ -181,7 +225,7 @@ public class HistoryDAO {
 				"SELECT * FROM history");
 
 		while (historyResultSet.next()) {
-			//Get info from history
+			// Get info from history
 			int historyId = historyResultSet.getInt("id");
 			int senderId = historyResultSet.getInt("senderId");
 			int buildResult = historyResultSet.getInt("buildResult");
@@ -190,16 +234,15 @@ public class HistoryDAO {
 			int numOfPassedTests = historyResultSet.getInt("numOfPassedTests");
 			String testLog = historyResultSet.getString("testLog");
 
-			// Get sender
-			PreparedStatement getSenderStatement = connection.prepareStatement("SELECT * FROM senders WHERE id = ?");
-			getSenderStatement.setInt(1, senderId);
-			ResultSet senderResultSet = getSenderStatement.executeQuery();
-			Sender sender = new Sender(senderResultSet.getString("login"), senderResultSet.getString("url"), senderResultSet.getString("avatarUrl"));
+			Sender sender = GetSender(senderId);
+			List<Commit> commits = GetCommitsForHistory(historyId);
 
-			// Get commits
-			PreparedStatement getCommitsStatement = connection.prepareStatement("SELECT id, sha, message, authorId, url, modifiedFiles FROM commits JOIN historyCommits ON id = commitId WHERE historyId = ?");
+			history.add(new BuildInfo(sender, commits,
+					new BuildInfo.BuildDetails(buildResult, buildLog),
+					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog)));
+
 		}
-		
+
 		return history;
 	}
 
