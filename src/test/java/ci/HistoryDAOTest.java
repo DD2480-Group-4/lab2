@@ -22,6 +22,10 @@ public class HistoryDAOTest {
 	private HistoryDAO historyDAO;
 	private final String testDatabaseName = "UnitTests.db";
 
+	/*
+	 * This method is called before each test method in this class. It sets up the
+	 * test database with tables and some initial data.
+	 */
 	@BeforeEach
 	void testSetup() throws SQLException {
 		historyDAO = new HistoryDAO(testDatabaseName);
@@ -56,12 +60,21 @@ public class HistoryDAOTest {
 		statement.executeBatch();
 	}
 
+	/*
+	 * This method is called after each test method in this class. It closes the
+	 * connection to the test database and deletes the database file.
+	 */
 	@AfterEach
 	void testCleanup() throws IOException, SQLException {
 		historyDAO.closeConnection();
 		FileUtils.forceDelete(new File(testDatabaseName));
 	}
 
+	/*
+	 * HistoryDAO Constructor Test:
+	 * The constructor is called in the test setup method. 
+	 * It is expected to create a database file with the correct tables.
+	 */
 	@Test
 	@DisplayName("HistoryDAO Constructor creates database with tables")
 	void HistoryDAO_Constructor_CreatesDatabaseWithTables() throws SQLException {
@@ -83,6 +96,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(resultSet.next()).isFalse();
 	}
 
+	/*
+	 * Get Author Test:
+	 * Gets an author that exists in the database.
+	 * The author is expected to have the correct name, username, and email.
+	 */
 	@Test
 	@DisplayName("Get Author that exists")
 	void getAuthor_AuthorExists_ReturnsAuthor() throws SQLException {
@@ -93,6 +111,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(author.email()).isEqualTo("john@doe.com");
 	}
 
+	/*
+	 * Get Author Test:
+	 * Gets an author that does not exist in the database.
+	 * The author is expected to be null.
+	 */
 	@Test
 	@DisplayName("Get Author that does not exists")
 	void getAuthor_AuthorDoesNotExists_ReturnsNull() throws SQLException {
@@ -100,6 +123,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(author).isNull();
 	}
 
+	/*
+	 * Get Sender Test:
+	 * Gets a sender that exists in the database.
+	 * The sender is expected to have the correct name, url, and avatarUrl.
+	 */
 	@Test
 	@DisplayName("Get Sender that exists")
 	void getSender_SenderExists_ReturnsSender() throws SQLException {
@@ -110,6 +138,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(sender.avatarUrl()).isEqualTo("johndoeAvatarUrl");
 	}
 
+	/*
+	 * Get Sender Test:
+	 * Gets a sender that does not exist in the database.
+	 * The sender is expected to be null.
+	 */
 	@Test
 	@DisplayName("Get Sender that does not exists")
 	void getSender_SenderDoesNotExists_ReturnsNull() throws SQLException {
@@ -117,6 +150,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(sender).isNull();
 	}
 
+	/*
+	 * Get Commits for History Test:
+	 * Gets the commits for a history that exists in the database.
+	 * The commits are expected to have the correct sha, message, author, url, and modifiedFiles.
+	 */
 	@Test
 	@DisplayName("Get Commits for history that exists")
 	void getCommitsForHistory_CommitsExists_ReturnsCommits() throws SQLException {
@@ -140,6 +178,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(commits.get(1).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
 	}
 
+	/*
+	 * Get Commits for History Test:
+	 * Gets the commits for a history that does not exist in the database.
+	 * The commits are expected to be an empty list.
+	 */
 	@Test
 	@DisplayName("Get Commits for history that does not exists")
 	void getCommitsForHistory_CommitsDoesNotExists_ReturnsEmptyList() throws SQLException {
@@ -147,6 +190,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(commits).hasSize(0);
 	}
 
+	/*
+	 * Get History Test:
+	 * Gets a history that exists in the database.
+	 * The history is expected to have the correct sender, buildDetails, testDetails, and commitList.
+	 */
 	@Test
 	@DisplayName("Get History that exists")
 	void getHistory_HistoryExists_ReturnsHistory() throws SQLException {
@@ -190,6 +238,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(commits.get(1).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
 	}
 
+	/*
+	 * Get History Test:
+	 * Gets a history that does not exist in the database.
+	 * The history is expected to be null.
+	 */
 	@Test
 	@DisplayName("Get History that does not exists")
 	void getHistory_HistoryDoesNotExists_ReturnsNull() throws SQLException {
@@ -197,6 +250,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(buildInfo).isNull();
 	}
 
+	/*
+	 * Get All History Test:
+	 * Gets all history from the database.
+	 * The histories is expected to have the correct sender, buildDetails, testDetails, and commitList.
+	 */
 	@Test
 	@DisplayName("Get all History")
 	void getAllHistory_ReturnsHistory() throws SQLException {
@@ -272,6 +330,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(commits.get(0).modifiedFiles()).containsExactly("File2.txt");
 	}
 
+	/*
+	 * Add Author Test:
+	 * Adds an author to the database.
+	 * The author is expected to be added to the database and have the correct name, username, and email.
+	 */
 	@Test
 	@DisplayName("Add Author")
 	void addAuthor_AuthorAdded() throws SQLException {
@@ -283,6 +346,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(author).isEqualTo(authorToAdd);
 	}
 
+	/*
+	 * Add Sender Test:
+	 * Adds a sender to the database.
+	 * The sender is expected to be added to the database and have the correct name, url, and avatarUrl.
+	 */
 	@Test
 	@DisplayName("Add Sender")
 	void addSender_SenderAdded() throws SQLException {
@@ -294,6 +362,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(sender).isEqualTo(senderToAdd);
 	}
 
+	/*
+	 * Add Commit Test:
+	 * Adds a commit to the database.
+	 * The commit is expected to be added to the database and have the correct sha, message, author, url, and modifiedFiles.
+	 */
 	@Test
 	@DisplayName("Add Commit")
 	void addCommit_CommitAdded() throws SQLException {
@@ -313,6 +386,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(resultSet.getString("modifiedFiles")).isEqualTo("File1.txt,File2.txt");
 	}
 
+	/*
+	 * Add History Test:
+	 * Adds a history to the database.
+	 * The history is expected to be added to the database and have the correct sender, buildDetails, testDetails, and commitList.
+	 */
 	@Test
 	@DisplayName("Add History")
 	void addHistory_HistoryAdded() throws SQLException {

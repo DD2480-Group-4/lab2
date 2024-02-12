@@ -4,16 +4,23 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 import ci.PushPayload.Commit;
 import ci.PushPayload.Author;
 import ci.PushPayload.Sender;
 
+/**
+ * Data Access Object for build history data
+ */
 public class HistoryDAO {
 
 	private final String databaseName;
 	private Connection connection;
 
+	/**
+	 * Creates a new HistoryDAO object
+	 *
+	 * @param databaseName Name of the database file
+	 */
 	public HistoryDAO(String databaseName) throws SQLException {
 		this.databaseName = databaseName;
 
@@ -44,6 +51,11 @@ public class HistoryDAO {
 
 	}
 
+	/**
+	 * Gets a connection to the database
+	 *
+	 * @return Connection to the database
+	 */
 	public Connection getConnection() throws SQLException {
 
 		if(connection != null && !connection.isClosed())
@@ -58,11 +70,20 @@ public class HistoryDAO {
 		}
 	}
 
+	/**
+	 * Closes the connection to the database
+	 */
 	public void closeConnection() throws SQLException
 	{
 		connection.close();
 	}
 
+	/**
+	 * Adds an author to the database
+	 *
+	 * @param author Author to add
+	 * @return ID of the author
+	 */
 	public int addAuthor(Author author) throws SQLException {
 		// Check if the author already exists
 		PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM authors WHERE email = ?");
@@ -87,6 +108,12 @@ public class HistoryDAO {
 		return id;
 	}
 
+	/**
+	 * Adds a sender to the database
+	 *
+	 * @param sender Sender to add
+	 * @return ID of the sender
+	 */
 	public int addSender(Sender sender) throws SQLException {
 
 		// Check if the sender already exists
@@ -112,6 +139,12 @@ public class HistoryDAO {
 		return id;
 	}
 
+	/**
+	 * Adds a commit to the database
+	 *
+	 * @param commit Commit to add
+	 * @return ID of the commit
+	 */
 	public int addCommit(Commit commit) throws SQLException {
 
 		// Check if the commit already exists
@@ -142,6 +175,12 @@ public class HistoryDAO {
 		return id;
 	}
 
+	/**
+	 * Adds a history to the database
+	 *
+	 * @param buildInfo Build information to add
+	 * @return ID of the history
+	 */
 	public int addHistory(BuildInfo buildInfo) throws SQLException {
 
 		// Add sender and commits to the database
@@ -177,6 +216,12 @@ public class HistoryDAO {
 		return historyId;
 	}
 
+	/**
+	 * Gets an author from the database
+	 *
+	 * @param id ID of the author
+	 * @return Author object
+	 */
 	public Author getAuthor(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM authors WHERE id=?");
 		preparedStatement.setInt(1, id);
@@ -191,6 +236,12 @@ public class HistoryDAO {
 		return null;
 	}
 
+	/**
+	 * Gets a list of commits associated with a history
+	 *
+	 * @param historyId ID of the history
+	 * @return List of commits associated to the history
+	 */
 	public List<Commit> getCommitsForHistory(int historyId) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement(
 				"SELECT id, sha, message, authorId, url, modifiedFiles FROM commits JOIN historyCommits ON id = commitId WHERE historyId = ?");
@@ -213,6 +264,12 @@ public class HistoryDAO {
 		return commits;
 	}
 
+	/**
+	 * Gets a sender from the database
+	 *
+	 * @param id ID of the sender
+	 * @return Sender object
+	 */
 	public Sender getSender(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM senders WHERE id=?");
 		preparedStatement.setInt(1, id);
@@ -227,6 +284,11 @@ public class HistoryDAO {
 		return null;
 	}
 
+	/**
+	 * Gets all history from the database
+	 *
+	 * @return List of BuildInfo objects
+	 */
 	public List<BuildInfo> getAllHistory() throws SQLException {
 
 		List<BuildInfo> history = new ArrayList<>();
@@ -256,6 +318,12 @@ public class HistoryDAO {
 		return history;
 	}
 
+	/**
+	 * Gets history from the database
+	 *
+	 * @param id ID of the history
+	 * @return BuildInfo object
+	 */
 	public BuildInfo getHistory(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM history WHERE id=?");
 		preparedStatement.setInt(1, id);
