@@ -276,4 +276,16 @@ public class HistoryDAOTest {
 		Assertions.assertThat(commits.get(0).url()).isEqualTo("commitUrl3");
 		Assertions.assertThat(commits.get(0).modifiedFiles()).containsExactly("File2.txt");
 	}
+
+	@Test
+	@DisplayName("Add Author")
+	void addAuthor_AuthorAdded() throws SQLException
+	{
+		ci.PushPayload.Author authorToAdd = new ci.PushPayload.Author("Test Tester", "test", "test@example,com");
+		int id = historyDAO.addAuthor(authorToAdd);
+
+		ci.PushPayload.Author author = historyDAO.getAuthor(id);
+		Assertions.assertThat(author).isNotNull();
+		Assertions.assertThat(author).isEqualTo(authorToAdd);
+	}
 }
