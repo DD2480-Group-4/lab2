@@ -219,18 +219,17 @@ public class HistoryDAO {
 		List<BuildInfo> history = new ArrayList<>();
 
 		Statement statement = connection.createStatement();
-		ResultSet historyResultSet = statement.executeQuery(
+		ResultSet resultSet = statement.executeQuery(
 				"SELECT * FROM history");
 
-		while (historyResultSet.next()) {
-			// Get info from history
-			int historyId = historyResultSet.getInt("id");
-			int senderId = historyResultSet.getInt("senderId");
-			int buildResult = historyResultSet.getInt("buildResult");
-			String buildLog = historyResultSet.getString("buildLog");
-			int totalTests = historyResultSet.getInt("totalTests");
-			int numOfPassedTests = historyResultSet.getInt("numOfPassedTests");
-			String testLog = historyResultSet.getString("testLog");
+		while (resultSet.next()) {
+			int historyId = resultSet.getInt("id");
+			int senderId = resultSet.getInt("senderId");
+			int buildResult = resultSet.getInt("buildResult");
+			String buildLog = resultSet.getString("buildLog");
+			int totalTests = resultSet.getInt("totalTests");
+			int numOfPassedTests = resultSet.getInt("numOfPassedTests");
+			String testLog = resultSet.getString("testLog");
 
 			Sender sender = GetSender(senderId);
 			List<Commit> commits = GetCommitsForHistory(historyId);
@@ -242,6 +241,31 @@ public class HistoryDAO {
 		}
 
 		return history;
+	}
+
+	public BuildInfo GetHistory(int id) throws SQLException {
+		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM history WHERE id=?");
+		preparedStatement.setInt(1, id);
+		ResultSet resultSet = preparedStatement.executeQuery();
+
+		if (resultSet.next()) {
+			int historyId = resultSet.getInt("id");
+			int senderId = resultSet.getInt("senderId");
+			int buildResult = resultSet.getInt("buildResult");
+			String buildLog = resultSet.getString("buildLog");
+			int totalTests = resultSet.getInt("totalTests");
+			int numOfPassedTests = resultSet.getInt("numOfPassedTests");
+			String testLog = resultSet.getString("testLog");
+
+			Sender sender = GetSender(senderId);
+			List<Commit> commits = GetCommitsForHistory(historyId);
+
+			 return new BuildInfo(sender, commits,
+					new BuildInfo.BuildDetails(buildResult, buildLog),
+					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog));
+		}
+
+		return null;
 	}
 
 }
