@@ -93,4 +93,22 @@ public class HistoryDAOTest {
 		Assertions.assertThat(author).isNull();
 	}
 
+	@Test
+	void getSender_SenderExists_ReturnsSender() throws SQLException
+	{
+		ci.PushPayload.Sender sender = historyDAO.getSender(1);
+		Assertions.assertThat(sender).isNotNull();
+		Assertions.assertThat(sender.name()).isEqualTo("johndoe");
+		Assertions.assertThat(sender.url()).isEqualTo("johndoeUrl");
+		Assertions.assertThat(sender.avatarUrl()).isEqualTo("johndoeAvatarUrl");
+	}
+
+	@Test
+	void getSender_SenderDoesNotExists_ReturnsNull() throws SQLException
+	{
+		ci.PushPayload.Sender sender = historyDAO.getSender(12);
+		Assertions.assertThat(sender).isNull();
+	}
+
+	
 }
