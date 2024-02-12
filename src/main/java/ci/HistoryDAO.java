@@ -164,7 +164,7 @@ public class HistoryDAO {
 		return historyId;
 	}
 
-	public Author GetAuthor(int id) throws SQLException {
+	public Author getAuthor(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM authors WHERE id=?");
 		preparedStatement.setInt(1, id);
 		ResultSet resultSet = preparedStatement.executeQuery();
@@ -178,7 +178,7 @@ public class HistoryDAO {
 		return null;
 	}
 
-	public List<Commit> GetCommitsForHistory(int historyId) throws SQLException {
+	public List<Commit> getCommitsForHistory(int historyId) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement(
 				"SELECT id, sha, message, authorId, url, modifiedFiles FROM commits JOIN historyCommits ON id = commitId WHERE historyId = ?");
 		preparedStatement.setInt(1, historyId);
@@ -186,7 +186,7 @@ public class HistoryDAO {
 
 		List<Commit> commits = new ArrayList<Commit>();
 		while (resultSet.next()) {
-			Author author = GetAuthor(resultSet.getInt("authorId"));
+			Author author = getAuthor(resultSet.getInt("authorId"));
 			String[] modifiedFiles = resultSet.getString("modifiedFiles").split(",");
 
 			commits.add(new Commit(resultSet.getString("sha"),
@@ -200,7 +200,7 @@ public class HistoryDAO {
 		return commits;
 	}
 
-	public Sender GetSender(int id) throws SQLException {
+	public Sender getSender(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM senders WHERE id=?");
 		preparedStatement.setInt(1, id);
 		ResultSet resultSet = preparedStatement.executeQuery();
@@ -231,8 +231,8 @@ public class HistoryDAO {
 			int numOfPassedTests = resultSet.getInt("numOfPassedTests");
 			String testLog = resultSet.getString("testLog");
 
-			Sender sender = GetSender(senderId);
-			List<Commit> commits = GetCommitsForHistory(historyId);
+			Sender sender = getSender(senderId);
+			List<Commit> commits = getCommitsForHistory(historyId);
 
 			history.add(new BuildInfo(sender, commits,
 					new BuildInfo.BuildDetails(buildResult, buildLog),
@@ -257,8 +257,8 @@ public class HistoryDAO {
 			int numOfPassedTests = resultSet.getInt("numOfPassedTests");
 			String testLog = resultSet.getString("testLog");
 
-			Sender sender = GetSender(senderId);
-			List<Commit> commits = GetCommitsForHistory(historyId);
+			Sender sender = getSender(senderId);
+			List<Commit> commits = getCommitsForHistory(historyId);
 
 			 return new BuildInfo(sender, commits,
 					new BuildInfo.BuildDetails(buildResult, buildLog),
