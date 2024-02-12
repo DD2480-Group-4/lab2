@@ -73,16 +73,24 @@ public class Builder implements AutoCloseable {
 	}
 
 	/**
-	 * Try to compile the project.
-	 * TODO Run tests also
-	 * @return {@link CommitStatuses#failure} if the build fails, {@link CommitStatuses#success} otherwise.
+	 * Try to compile the project and run tests.
+	 * @return {@link CommitStatuses#failure} if the build fails,
+	 *         {@link CommitStatuses#error} if the build succeeds, but the tests fail,
+	 *         {@link CommitStatuses#success} otherwise.
 	 */
-	public CommitStatuses build() {
+	public CommitStatuses buildAndTest() {
 		var handler = new BlockingResultHandler<>(Void.class);
 		try {
-			runTasks(launcher -> launcher.forTasks("build"), handler);
+			runTasks(launcher -> launcher.forTasks("assemble"), handler);
 			handler.getResult();
-			return CommitStatuses.success;
+
+			try {
+				runTasks(launcher -> launcher.forTasks("test"), handler);
+				handler.getResult();
+				return CommitStatuses.success;
+			} catch (BuildException ignored) {
+				return CommitStatuses.error;
+			}
 		} catch (BuildException ignored) {
 			return CommitStatuses.failure;
 		}

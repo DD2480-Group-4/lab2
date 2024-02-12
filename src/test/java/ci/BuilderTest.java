@@ -125,17 +125,36 @@ public class BuilderTest {
 	 * The project is expected to compile successfully.
 	 */
 	@Test
-	@DisplayName("Self-build test")
-	void buildProject() {
+	@DisplayName("Self-build success")
+	void buildAndTestProject() {
 		var buildDir = Path.of("./src/test/resources/build_success");
 		try (var builder = new Builder(buildDir)) {
-			Assertions.assertThat(builder.build()).isEqualTo(CommitStatuses.success);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.success);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		Assertions.assertThat(buildDir.resolve(".gradle").toFile().exists()).isFalse();
 		Assertions.assertThat(buildDir.resolve("build").toFile().exists()).isFalse();
 	}
+
+	/**
+	 * BuilderTest:
+	 * Attempts to build a Gradle project.
+	 * The project is expected to compile successfully.
+	 */
+	@Test
+	@DisplayName("Self-build test error")
+	void buildProjectAndFailTest() {
+		var buildDir = Path.of("./src/test/resources/build_success_test_fail");
+		try (var builder = new Builder(buildDir)) {
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.error);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		Assertions.assertThat(buildDir.resolve(".gradle").toFile().exists()).isFalse();
+		Assertions.assertThat(buildDir.resolve("build").toFile().exists()).isFalse();
+	}
+
 
 	/**
 	 * BuilderTest:
@@ -147,7 +166,7 @@ public class BuilderTest {
 	void buildFail() {
 		var buildDir = Path.of("./src/test/resources/build_fail");
 		try (var builder = new Builder(buildDir)) {
-			Assertions.assertThat(builder.build()).isEqualTo(CommitStatuses.failure);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.failure);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
