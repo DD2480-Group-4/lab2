@@ -77,4 +77,20 @@ public class HistoryDAOTest {
 		Assertions.assertThat(resultSet.getString("TABLE_NAME")).isEqualTo("senders");
 		Assertions.assertThat(resultSet.next()).isFalse();
 	}
+
+	@Test
+	void getAuthor_AuthorExists_ReturnsAuthor() throws SQLException {
+		ci.PushPayload.Author author = historyDAO.getAuthor(1);
+		Assertions.assertThat(author).isNotNull();
+		Assertions.assertThat(author.name()).isEqualTo("John Doe");
+		Assertions.assertThat(author.userName()).isEqualTo("johndoe");
+		Assertions.assertThat(author.email()).isEqualTo("john@doe.com");
+	}
+
+	@Test
+	void getAuthor_AuthorDoesNotExists_ReturnsNull() throws SQLException {
+		ci.PushPayload.Author author = historyDAO.getAuthor(13);
+		Assertions.assertThat(author).isNull();
+	}
+
 }
