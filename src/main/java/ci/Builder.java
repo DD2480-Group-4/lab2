@@ -39,6 +39,7 @@ public class Builder implements AutoCloseable {
 	/**
 	 * Creates a new builder.
 	 * @param projectDir The directory of the project to build.
+	 * @param output The output stream to output the logs to.
 	 */
 	public Builder(Path projectDir, OutputStream output) {
 		this.projectDir = projectDir;
