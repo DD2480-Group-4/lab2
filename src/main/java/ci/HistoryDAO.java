@@ -58,6 +58,11 @@ public class HistoryDAO {
 		}
 	}
 
+	public void closeConnection() throws SQLException
+	{
+		connection.close();
+	}
+
 	public int addAuthor(Author author) throws SQLException {
 		// Check if the author already exists
 		PreparedStatement getStatement = connection.prepareStatement("SELECT id FROM authors WHERE email = ?");
