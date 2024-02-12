@@ -7,6 +7,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -15,7 +16,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
 
 public class HistoryDAOTest {
 
@@ -41,15 +41,17 @@ public class HistoryDAOTest {
 		statement.addBatch(
 				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha3', 'Commit3', 1, 'commitUrl3', 'File2.txt')");
 
-		statement.addBatch("INSERT INTO senders (login, url, avatarUrl) VALUES ('johndoe', 'johndoeUrl', 'johndoeAvatarUrl')");
+		statement.addBatch(
+				"INSERT INTO senders (login, url, avatarUrl) VALUES ('johndoe', 'johndoeUrl', 'johndoeAvatarUrl')");
 
-		statement.addBatch("INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog') VALUES (1, 1, 'Build Log 1', 10, 10, 'All test passed')");
-		statement.addBatch("INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog') VALUES (1, 0, 'Build Log 2', 10, 5, '5 test failed')");
+		statement.addBatch(
+				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog') VALUES (1, 1, 'Build Log 1', 10, 10, 'All test passed')");
+		statement.addBatch(
+				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog') VALUES (1, 0, 'Build Log 2', 10, 5, '5 test failed')");
 
 		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 1)");
 		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 2)");
 		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (2, 3)");
-
 
 		statement.executeBatch();
 	}
@@ -100,8 +102,7 @@ public class HistoryDAOTest {
 
 	@Test
 	@DisplayName("Get Sender that exists")
-	void getSender_SenderExists_ReturnsSender() throws SQLException
-	{
+	void getSender_SenderExists_ReturnsSender() throws SQLException {
 		ci.PushPayload.Sender sender = historyDAO.getSender(1);
 		Assertions.assertThat(sender).isNotNull();
 		Assertions.assertThat(sender.name()).isEqualTo("johndoe");
@@ -111,16 +112,14 @@ public class HistoryDAOTest {
 
 	@Test
 	@DisplayName("Get Sender that does not exists")
-	void getSender_SenderDoesNotExists_ReturnsNull() throws SQLException
-	{
+	void getSender_SenderDoesNotExists_ReturnsNull() throws SQLException {
 		ci.PushPayload.Sender sender = historyDAO.getSender(12);
 		Assertions.assertThat(sender).isNull();
 	}
 
-	@Test 
+	@Test
 	@DisplayName("Get Commits for history that exists")
-	void getCommitsForHistory_CommitsExists_ReturnsCommits() throws SQLException
-	{
+	void getCommitsForHistory_CommitsExists_ReturnsCommits() throws SQLException {
 		List<ci.PushPayload.Commit> commits = historyDAO.getCommitsForHistory(1);
 		Assertions.assertThat(commits).hasSize(2);
 
@@ -141,18 +140,16 @@ public class HistoryDAOTest {
 		Assertions.assertThat(commits.get(1).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
 	}
 
-	@Test 
+	@Test
 	@DisplayName("Get Commits for history that does not exists")
-	void getCommitsForHistory_CommitsDoesNotExists_ReturnsEmptyList() throws SQLException
-	{
+	void getCommitsForHistory_CommitsDoesNotExists_ReturnsEmptyList() throws SQLException {
 		List<ci.PushPayload.Commit> commits = historyDAO.getCommitsForHistory(15);
 		Assertions.assertThat(commits).hasSize(0);
 	}
 
 	@Test
 	@DisplayName("Get History that exists")
-	void getHistory_HistoryExists_ReturnsHistory() throws SQLException
-	{
+	void getHistory_HistoryExists_ReturnsHistory() throws SQLException {
 		BuildInfo buildInfo = historyDAO.getHistory(1);
 
 		ci.PushPayload.Sender sender = buildInfo.getSender();
@@ -195,16 +192,14 @@ public class HistoryDAOTest {
 
 	@Test
 	@DisplayName("Get History that does not exists")
-	void getHistory_HistoryDoesNotExists_ReturnsNull() throws SQLException
-	{
+	void getHistory_HistoryDoesNotExists_ReturnsNull() throws SQLException {
 		BuildInfo buildInfo = historyDAO.getHistory(15);
 		Assertions.assertThat(buildInfo).isNull();
 	}
 
 	@Test
 	@DisplayName("Get all History")
-	void getAllHistory_ReturnsHistory() throws SQLException
-	{
+	void getAllHistory_ReturnsHistory() throws SQLException {
 		List<BuildInfo> history = historyDAO.getAllHistory();
 		Assertions.assertThat(history).hasSize(2);
 
@@ -279,8 +274,7 @@ public class HistoryDAOTest {
 
 	@Test
 	@DisplayName("Add Author")
-	void addAuthor_AuthorAdded() throws SQLException
-	{
+	void addAuthor_AuthorAdded() throws SQLException {
 		ci.PushPayload.Author authorToAdd = new ci.PushPayload.Author("Test Tester", "test", "test@example,com");
 		int id = historyDAO.addAuthor(authorToAdd);
 
@@ -291,8 +285,7 @@ public class HistoryDAOTest {
 
 	@Test
 	@DisplayName("Add Sender")
-	void addSender_SenderAdded() throws SQLException
-	{
+	void addSender_SenderAdded() throws SQLException {
 		ci.PushPayload.Sender senderToAdd = new ci.PushPayload.Sender("test", "testUrl", "testAvatarUrl");
 		int id = historyDAO.addSender(senderToAdd);
 
@@ -303,10 +296,10 @@ public class HistoryDAOTest {
 
 	@Test
 	@DisplayName("Add Commit")
-	void addCommit_CommitAdded() throws SQLException
-	{
+	void addCommit_CommitAdded() throws SQLException {
 		ci.PushPayload.Author authorToAdd = new ci.PushPayload.Author("Test Tester", "test", "test@example,com");
-		ci.PushPayload.Commit commitToAdd = new ci.PushPayload.Commit("sha4", "Test Commit", authorToAdd, "testUrl", new String[]{"File1.txt", "File2.txt"});
+		ci.PushPayload.Commit commitToAdd = new ci.PushPayload.Commit("sha4", "Test Commit", authorToAdd, "testUrl",
+				new String[] { "File1.txt", "File2.txt" });
 		int id = historyDAO.addCommit(commitToAdd);
 
 		Connection connection = historyDAO.getConnection();
@@ -318,5 +311,43 @@ public class HistoryDAOTest {
 		Assertions.assertThat(resultSet.getInt("authorId")).isEqualTo(historyDAO.addAuthor(authorToAdd));
 		Assertions.assertThat(resultSet.getString("url")).isEqualTo("testUrl");
 		Assertions.assertThat(resultSet.getString("modifiedFiles")).isEqualTo("File1.txt,File2.txt");
+	}
+
+	@Test
+	@DisplayName("Add History")
+	void addHistory_HistoryAdded() throws SQLException {
+
+		ci.PushPayload.Author authorToAdd = new ci.PushPayload.Author("Test Tester", "test", "test@example,com");
+		List<ci.PushPayload.Commit> commitToAdd = List.of(new ci.PushPayload.Commit("sha4", "Test Commit", authorToAdd, "testUrl",
+				new String[] { "File1.txt", "File2.txt" }));
+		ci.PushPayload.Sender senderToAdd = new ci.PushPayload.Sender("test", "testUrl", "testAvatarUrl");
+		ci.BuildInfo.BuildDetails buildDetailsToAdd = new ci.BuildInfo.BuildDetails(1, "Build Log 1");
+		ci.BuildInfo.TestDetails testDetailsToAdd = new ci.BuildInfo.TestDetails(10, 10, "All test passed");
+		BuildInfo buildInfoToAdd = new BuildInfo(senderToAdd, commitToAdd, buildDetailsToAdd, testDetailsToAdd);
+
+		int id = historyDAO.addHistory(buildInfoToAdd);
+
+		BuildInfo buildInfo = historyDAO.getHistory(id);
+		Assertions.assertThat(buildInfo).isNotNull();
+
+		List<ci.PushPayload.Commit> commits = buildInfo.getCommitList();
+		Assertions.assertThat(commits).hasSize(1);
+		Assertions.assertThat(commits.get(0).sha()).isEqualTo(commitToAdd.get(0).sha());
+		Assertions.assertThat(commits.get(0).message()).isEqualTo(commitToAdd.get(0).message());
+		Assertions.assertThat(commits.get(0).author()).isEqualTo(commitToAdd.get(0).author());
+		Assertions.assertThat(commits.get(0).url()).isEqualTo(commitToAdd.get(0).url());
+		Assertions.assertThat(commits.get(0).modifiedFiles()).containsExactly(commitToAdd.get(0).modifiedFiles());
+
+		ci.PushPayload.Sender sender = buildInfo.getSender();
+		Assertions.assertThat(sender).isNotNull();
+		Assertions.assertThat(sender).isEqualTo(senderToAdd);
+
+		ci.BuildInfo.BuildDetails buildDetails = buildInfo.getBuildDetails();
+		Assertions.assertThat(buildDetails).isNotNull();
+		Assertions.assertThat(buildDetails).isEqualTo(buildDetailsToAdd);
+
+		ci.BuildInfo.TestDetails testDetails = buildInfo.getTestDetails();
+		Assertions.assertThat(testDetails).isNotNull();
+		Assertions.assertThat(testDetails).isEqualTo(testDetailsToAdd);
 	}
 }
