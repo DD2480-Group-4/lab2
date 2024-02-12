@@ -12,12 +12,13 @@ import org.gradle.tooling.internal.consumer.BlockingResultHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
 /**
  * Builder that can run gradle actions on projects.
- * Create a new builder with {@link Builder#Builder(Path)}} and run
+ * Create a new builder with {@link Builder#Builder(Path, OutputStream)}} and run
  * {@link Builder#runTasks(Consumer, ResultHandler)}.
  * For example:
  * try (var builder = new Builder()) {
@@ -33,15 +34,17 @@ public class Builder implements AutoCloseable {
 
 	private final GradleConnector connector;
 	private final Path projectDir;
+	private final OutputStream output;
 
 	/**
 	 * Creates a new builder.
 	 * @param projectDir The directory of the project to build.
 	 */
-	public Builder(Path projectDir) {
+	public Builder(Path projectDir, OutputStream output) {
 		this.projectDir = projectDir;
 		connector = GradleConnector.newConnector();
 		connector.forProjectDirectory(projectDir.toFile());
+		this.output = output;
 	}
 
 	/**
@@ -57,6 +60,8 @@ public class Builder implements AutoCloseable {
 	public void runTasks(Consumer<BuildLauncher> executeTasks, ResultHandler<? super Void> handler) {
 		try (var connection = connector.connect()) {
 			var taskRunner = connection.newBuild();
+			taskRunner.setStandardOutput(output);
+			taskRunner.setStandardError(output);
 			executeTasks.accept(taskRunner);
 			taskRunner.run(handler);
 		}

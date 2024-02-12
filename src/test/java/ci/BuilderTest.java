@@ -6,8 +6,10 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -128,7 +130,7 @@ public class BuilderTest {
 	@DisplayName("Self-build success")
 	void buildAndTestProject() {
 		var buildDir = Path.of("./src/test/resources/build_success");
-		try (var builder = new Builder(buildDir)) {
+		try (var builder = new Builder(buildDir, System.out)) {
 			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.success);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -146,7 +148,7 @@ public class BuilderTest {
 	@DisplayName("Self-build test error")
 	void buildProjectAndFailTest() {
 		var buildDir = Path.of("./src/test/resources/build_success_test_fail");
-		try (var builder = new Builder(buildDir)) {
+		try (var builder = new Builder(buildDir, System.out)) {
 			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.error);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -165,13 +167,31 @@ public class BuilderTest {
 	@DisplayName("Self-build failure")
 	void buildFail() {
 		var buildDir = Path.of("./src/test/resources/build_fail");
-		try (var builder = new Builder(buildDir)) {
+		try (var builder = new Builder(buildDir, System.out)) {
 			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.failure);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		Assertions.assertThat(buildDir.resolve(".gradle").toFile().exists()).isFalse();
 		Assertions.assertThat(buildDir.resolve("build").toFile().exists()).isFalse();
+	}
+
+	/**
+	 * BuilderTest:
+	 * Compiles the successful project and checks that the log seems to contain the information it should.
+	 * The log should contain the string "BUILD SUCCESSFUL".
+	 */
+	@Test
+	@DisplayName("Test Output Stream")
+	void testOutputStream() {
+		var buildDir = Path.of("./src/test/resources/build_success");
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (var builder = new Builder(buildDir, new PrintStream(out))) {
+			builder.buildAndTest();
+			Assertions.assertThat(out.toString().contains("BUILD SUCCESSFUL")).isTrue();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }
