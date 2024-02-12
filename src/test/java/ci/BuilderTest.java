@@ -33,7 +33,7 @@ public class BuilderTest {
 	@DisplayName("Check file deletion")
 	void testRepositoryCloning() throws GitAPIException, IOException {
 
-		Builder builder = new Builder();
+		Builder builder = new Builder(Path.of("."));
 
 		String currentDir = System.getProperty("user.dir");
 		String testRemotePath = currentDir.concat("/remotetest");
@@ -101,7 +101,7 @@ public class BuilderTest {
 	@DisplayName("Check file deletion")
 	void testDeleteDirectory() {
 
-		Builder builder = new Builder();
+		Builder builder = new Builder(Path.of("."));
 
 		String currentDir = System.getProperty("user.dir");
 		String testDirPath = currentDir.concat("/temptest");
