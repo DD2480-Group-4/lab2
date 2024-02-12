@@ -256,7 +256,7 @@ public class HistoryDAO {
 		return history;
 	}
 
-	public BuildInfo GetHistory(int id) throws SQLException {
+	public BuildInfo getHistory(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM history WHERE id=?");
 		preparedStatement.setInt(1, id);
 		ResultSet resultSet = preparedStatement.executeQuery();

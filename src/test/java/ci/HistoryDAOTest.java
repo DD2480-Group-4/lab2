@@ -16,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+
 public class HistoryDAOTest {
 
 	private HistoryDAO historyDAO;
@@ -139,5 +140,55 @@ public class HistoryDAOTest {
 	{
 		List<ci.PushPayload.Commit> commits = historyDAO.getCommitsForHistory(15);
 		Assertions.assertThat(commits).hasSize(0);
+	}
+
+	@Test
+	void getHistory_HistoryExists_ReturnsHistory() throws SQLException
+	{
+		BuildInfo buildInfo = historyDAO.getHistory(1);
+
+		ci.PushPayload.Sender sender = buildInfo.getSender();
+		Assertions.assertThat(sender).isNotNull();
+		Assertions.assertThat(sender.name()).isEqualTo("johndoe");
+		Assertions.assertThat(sender.url()).isEqualTo("johndoeUrl");
+		Assertions.assertThat(sender.avatarUrl()).isEqualTo("johndoeAvatarUrl");
+
+		ci.BuildInfo.BuildDetails buildDetails = buildInfo.getBuildDetails();
+		Assertions.assertThat(buildDetails).isNotNull();
+		Assertions.assertThat(buildDetails.buildResult()).isEqualTo(1);
+		Assertions.assertThat(buildDetails.buildLog()).isEqualTo("Build Log 1");
+
+		ci.BuildInfo.TestDetails testDetails = buildInfo.getTestDetails();
+		Assertions.assertThat(testDetails).isNotNull();
+		Assertions.assertThat(testDetails.totalTests()).isEqualTo(10);
+		Assertions.assertThat(testDetails.numOfPassedTests()).isEqualTo(10);
+		Assertions.assertThat(testDetails.testLog()).isEqualTo("All test passed");
+
+		List<ci.PushPayload.Commit> commits = buildInfo.getCommitList();
+		Assertions.assertThat(commits).hasSize(2);
+		Assertions.assertThat(commits).hasSize(2);
+
+		Assertions.assertThat(commits.get(0).sha()).isEqualTo("sha1");
+		Assertions.assertThat(commits.get(0).message()).isEqualTo("Commit1");
+		Assertions.assertThat(commits.get(0).author().name()).isEqualTo("John Doe");
+		Assertions.assertThat(commits.get(0).author().userName()).isEqualTo("johndoe");
+		Assertions.assertThat(commits.get(0).author().email()).isEqualTo("john@doe.com");
+		Assertions.assertThat(commits.get(0).url()).isEqualTo("commitUrl1");
+		Assertions.assertThat(commits.get(0).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
+
+		Assertions.assertThat(commits.get(1).sha()).isEqualTo("sha2");
+		Assertions.assertThat(commits.get(1).message()).isEqualTo("Commit2");
+		Assertions.assertThat(commits.get(1).author().name()).isEqualTo("Mr Bean");
+		Assertions.assertThat(commits.get(1).author().userName()).isEqualTo("mrbean");
+		Assertions.assertThat(commits.get(1).author().email()).isEqualTo("beanAndTeddy@funny.org");
+		Assertions.assertThat(commits.get(1).url()).isEqualTo("commitUrl2");
+		Assertions.assertThat(commits.get(1).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
+	}
+
+	@Test
+	void getHistory_HistoryDoesNotExists_ReturnsNull() throws SQLException
+	{
+		BuildInfo buildInfo = historyDAO.getHistory(15);
+		Assertions.assertThat(buildInfo).isNull();
 	}
 }
