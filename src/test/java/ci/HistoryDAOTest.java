@@ -61,6 +61,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test
+	@DisplayName("HistoryDAO Constructor creates database with tables")
 	void HistoryDAO_Constructor_CreatesDatabaseWithTables() throws SQLException {
 		Connection connection = historyDAO.getConnection();
 		DatabaseMetaData metaData = connection.getMetaData();
@@ -81,6 +82,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test
+	@DisplayName("Get Author that exists")
 	void getAuthor_AuthorExists_ReturnsAuthor() throws SQLException {
 		ci.PushPayload.Author author = historyDAO.getAuthor(1);
 		Assertions.assertThat(author).isNotNull();
@@ -90,12 +92,14 @@ public class HistoryDAOTest {
 	}
 
 	@Test
+	@DisplayName("Get Author that does not exists")
 	void getAuthor_AuthorDoesNotExists_ReturnsNull() throws SQLException {
 		ci.PushPayload.Author author = historyDAO.getAuthor(13);
 		Assertions.assertThat(author).isNull();
 	}
 
 	@Test
+	@DisplayName("Get Sender that exists")
 	void getSender_SenderExists_ReturnsSender() throws SQLException
 	{
 		ci.PushPayload.Sender sender = historyDAO.getSender(1);
@@ -106,6 +110,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test
+	@DisplayName("Get Sender that does not exists")
 	void getSender_SenderDoesNotExists_ReturnsNull() throws SQLException
 	{
 		ci.PushPayload.Sender sender = historyDAO.getSender(12);
@@ -113,6 +118,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test 
+	@DisplayName("Get Commits for history that exists")
 	void getCommitsForHistory_CommitsExists_ReturnsCommits() throws SQLException
 	{
 		List<ci.PushPayload.Commit> commits = historyDAO.getCommitsForHistory(1);
@@ -136,6 +142,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test 
+	@DisplayName("Get Commits for history that does not exists")
 	void getCommitsForHistory_CommitsDoesNotExists_ReturnsEmptyList() throws SQLException
 	{
 		List<ci.PushPayload.Commit> commits = historyDAO.getCommitsForHistory(15);
@@ -143,6 +150,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test
+	@DisplayName("Get History that exists")
 	void getHistory_HistoryExists_ReturnsHistory() throws SQLException
 	{
 		BuildInfo buildInfo = historyDAO.getHistory(1);
@@ -186,6 +194,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test
+	@DisplayName("Get History that does not exists")
 	void getHistory_HistoryDoesNotExists_ReturnsNull() throws SQLException
 	{
 		BuildInfo buildInfo = historyDAO.getHistory(15);
@@ -193,6 +202,7 @@ public class HistoryDAOTest {
 	}
 
 	@Test
+	@DisplayName("Get all History")
 	void getAllHistory_ReturnsHistory() throws SQLException
 	{
 		List<BuildInfo> history = historyDAO.getAllHistory();
