@@ -40,7 +40,7 @@ public class BuilderTest {
 		// Creates the remote dir
 		testRemote.mkdirs();
 
-		try (Builder builder = new Builder(Path.of(dirPath))) {
+		try (Builder builder = new Builder(Path.of(dirPath), System.out)) {
 
 			Git git = Git.init().setDirectory(testRemote).call();
 			// Create a file in the master branch of the repository
