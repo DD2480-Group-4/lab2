@@ -13,7 +13,6 @@ import org.gradle.tooling.internal.consumer.BlockingResultHandler;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.function.Consumer;
 
 /**
@@ -89,7 +88,7 @@ public class Builder implements AutoCloseable {
 		}
 	}
 
-	boolean deleteAfter = false;
+	private boolean deleteAfter = false;
 	/**
 	 * Clones repository using provided Url into temporary directory
 	 * Checks out the provided branch
@@ -99,11 +98,9 @@ public class Builder implements AutoCloseable {
 	 * @param targetBranch Branch from repository to be checked out
 	 */
 	public void cloneTargetRepo(String targetRepoUrl, String targetBranch) throws GitAPIException {
-		String currentDir = System.getProperty("user.dir");
-		String cloneTargetDirPath = currentDir.concat("/temp");
 		Git git;
 
-		File dir = new File(cloneTargetDirPath);
+		File dir = projectDir.toFile();
 		// Deletes the temp directory if it already exists, then creates a new temp dir
 		deleteDirectory(dir);
 		if (!dir.exists()) {
@@ -112,10 +109,10 @@ public class Builder implements AutoCloseable {
 
 		try {
 			// Clone
-			System.out.println("Cloning " + targetRepoUrl + " into " + cloneTargetDirPath);
+			System.out.println("Cloning " + targetRepoUrl + " into " + dir);
 			git = Git.cloneRepository()
 				.setURI(targetRepoUrl)
-				.setDirectory(Paths.get(cloneTargetDirPath).toFile())
+				.setDirectory(dir)
 				.call();
 			System.out.println("Completed Cloning");
 		} catch (GitAPIException e) {
@@ -157,7 +154,7 @@ public class Builder implements AutoCloseable {
 	 *
 	 * @param directory Directory to be deleted
 	 */
-	public void deleteDirectory(File directory) {
+	public static void deleteDirectory(File directory) {
 		if (directory.exists()) {
 			try {
 				FileUtils.deleteDirectory(directory);

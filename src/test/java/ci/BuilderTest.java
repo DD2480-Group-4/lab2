@@ -1,23 +1,18 @@
 package ci;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import java.io.IOException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Fail.fail;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-
-import java.io.IOException;
-import java.nio.file.Path;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BuilderTest {
 
@@ -30,10 +25,8 @@ public class BuilderTest {
 	 * Both directories are deleted after the test.
 	 */
 	@Test
-	@DisplayName("Check file deletion")
+	@DisplayName("Test Repository Cloning")
 	void testRepositoryCloning() throws GitAPIException, IOException {
-
-		Builder builder = new Builder(Path.of("."));
 
 		String currentDir = System.getProperty("user.dir");
 		String testRemotePath = currentDir.concat("/remotetest");
@@ -45,7 +38,7 @@ public class BuilderTest {
 		// Creates the remote dir
 		testRemote.mkdirs();
 
-		try {
+		try (Builder builder = new Builder(Path.of(dirPath))) {
 
 			Git git = Git.init().setDirectory(testRemote).call();
 			// Create a file in the master branch of the repository
@@ -86,8 +79,8 @@ public class BuilderTest {
 			e.printStackTrace();
 			fail("Exception occurred during the test: " + e.getMessage());
 		} finally {
-			builder.deleteDirectory(testRemote);
-			builder.deleteDirectory(testDir);
+			Builder.deleteDirectory(testRemote);
+			Builder.deleteDirectory(testDir);
 		}
 	}
 
@@ -100,9 +93,6 @@ public class BuilderTest {
 	@Test
 	@DisplayName("Check file deletion")
 	void testDeleteDirectory() {
-
-		Builder builder = new Builder(Path.of("."));
-
 		String currentDir = System.getProperty("user.dir");
 		String testDirPath = currentDir.concat("/temptest");
 
@@ -122,7 +112,7 @@ public class BuilderTest {
 		assertTrue(testDir.exists());
 		assertTrue(testFile.exists());
 
-		builder.deleteDirectory(testDir);
+		Builder.deleteDirectory(testDir);
 
 		assertFalse(testDir.exists());
 		assertFalse(testFile.exists());
