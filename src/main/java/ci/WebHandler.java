@@ -39,18 +39,25 @@ public class WebHandler {
 			return "<strong>Build not found</strong>";
 		}
 
-		sb.append("<strong>Build Info for build id: " + build.getId() + "</strong><br/>");
-		sb.append("Sender: " + build.getSender().name() + "<br/>");
-		sb.append("Commits: <br/>");
+		sb.append("<strong>Build Info for build " + build.getId() + "</strong><br/>");
+		sb.append("Sender:<br/>");
+		sb.append("&emsp;<img src=\"" + build.getSender().avatarUrl() + "\" alt=\"Avatar\" width=\"50\" height=\"50\"><br/>");
+		sb.append("&emsp;Name: " + build.getSender().name() + "<br/>");
+		sb.append("&emsp;URL: " + build.getSender().url() + "<br/>");
+
+		sb.append("<br/>Commits: <br/>");
 		for (Commit commit : build.getCommitList()) {
-			sb.append("&emsp;");
-			sb.append("Author: " + commit.author().name());
-			sb.append(" | Message: " + commit.message() + "<br/>");
+			sb.append("&emsp;Id: " + commit.sha() + "<br/>");
+			sb.append("&emsp;Message: " + commit.message() + "<br/>");
+			sb.append("&emsp;Author: " + commit.author().name() + "<br/>");
+			sb.append("&emsp;&emsp;Name: " + commit.author().userName() + ".<br/>");
+			sb.append("&emsp;&emsp;Email: " + commit.author().email() + ".<br/><br/>");
 		}
 		sb.append("Build Details: <br/>");
+		sb.append("&emsp;Time: " + build.getBuildDate() + "<br/>");
 		sb.append("&emsp;Result: " + build.getBuildDetails().buildResult() + "<br/>");
 		sb.append("&emsp;Log: " + build.getBuildDetails().buildLog() + "<br/>");
-		sb.append("Test Details: <br/>");
+		sb.append("<br/>Test Details: <br/>");
 		sb.append("&emsp;Total: " + build.getTestDetails().totalTests() + "<br/>");
 		sb.append("&emsp;Passed: " + build.getTestDetails().numOfPassedTests() + "<br/>");
 		sb.append("&emsp;Log: " + build.getTestDetails().testLog() + "<br/>");

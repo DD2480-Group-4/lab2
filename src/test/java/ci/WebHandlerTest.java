@@ -37,14 +37,23 @@ public class WebHandlerTest {
 	@DisplayName("buildInfoToHtmlString success")
 	void testBuildInfoToString() {
 		WebHandler webHandler = new WebHandler(history);
-		String expectedBuildInfoString = "<strong>Build Info for build id: 2</strong><br/>" +
-			"Sender: Jane Doe<br/>" +
-			"Commits: <br/>" +
-			"&emsp;Author: Jane Doe | Message: commit2<br/>" +
-			"Build Details: <br/>" +
+		String expectedBuildInfoString =
+			"<strong>Build Info for build 2</strong><br/>" +
+			"Sender:<br/>" +
+			"&emsp;<img src=\"jane@doe.com\" alt=\"Avatar\" width=\"50\" height=\"50\"><br/>" +
+			"&emsp;Name: Jane Doe<br/>" +
+			"&emsp;URL: janedoe<br/>" +
+			"<br/>Commits: <br/>" +
+			"&emsp;Id: sha2<br/>" +
+			"&emsp;Message: commit2<br/>" +
+			"&emsp;Author: Jane Doe<br/>" +
+			"&emsp;&emsp;Name: janedoe.<br/>" +
+			"&emsp;&emsp;Email: jane@doe.com.<br/>" +
+			"<br/>Build Details: <br/>" +
+			"&emsp;Time: 2021-01-02T00:00:00<br/>" +
 			"&emsp;Result: 2<br/>" +
 			"&emsp;Log: Build Log 2<br/>" +
-			"Test Details: <br/>" +
+			"<br/>Test Details: <br/>" +
 			"&emsp;Total: 2<br/>" +
 			"&emsp;Passed: 2<br/>" +
 			"&emsp;Log: Test Log 2<br/>";

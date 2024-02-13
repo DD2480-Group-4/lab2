@@ -10,10 +10,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
 import java.io.OutputStream;
 import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,6 +83,7 @@ public class Main extends AbstractHandler
 				HistoryDAO dao = new HistoryDAO("builds.db");
 				List<BuildInfo> history = dao.getAllHistory();
 				WebHandler webHandler = new WebHandler(history);
+				System.out.println("hustory: " + history);
 
 				if (history.isEmpty()) {
 					response.getWriter().println("<strong>No builds found in database.</strong>");
@@ -157,6 +160,39 @@ public class Main extends AbstractHandler
 		server.setHandler(new Main());
 		server.start();
 		server.join();
+/*
+		HistoryDAO dao = new HistoryDAO("builds.db");
+
+		Connection connection = dao.getConnection();
+		Statement statement = connection.createStatement();
+
+		statement
+				.addBatch("INSERT INTO authors (name, username, email) VALUES ('John Doe', 'johndoe', 'john@doe.com')");
+		statement.addBatch(
+				"INSERT INTO authors (name, username, email) VALUES ('Mr Bean', 'mrbean', 'beanAndTeddy@funny.org')");
+
+		statement.addBatch(
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha1', 'Commit1', 1, 'commitUrl1', 'File1.txt,File2.txt')");
+		statement.addBatch(
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha2', 'Commit2', 2, 'commitUrl2', 'File1.txt,File2.txt')");
+		statement.addBatch(
+				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES ('sha3', 'Commit3', 1, 'commitUrl3', 'File2.txt')");
+
+		statement.addBatch(
+				"INSERT INTO senders (login, url, avatarUrl) VALUES ('johndoe', 'johndoeUrl', 'johndoeAvatarUrl')");
+
+		statement.addBatch(
+				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog', 'buildDate') VALUES (1, 1, 'Build Log 1', 10, 10, 'All test passed', '2021-01-01T00:00:00')");
+		statement.addBatch(
+				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog', buildDate) VALUES (1, 0, 'Build Log 2', 10, 5, '5 test failed', '2021-01-02T00:00:00')");
+
+		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 1)");
+		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 2)");
+		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (2, 3)");
+
+		statement.executeBatch();
+		*/
+
 	}
 
 }
