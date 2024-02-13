@@ -3,25 +3,24 @@
 This is a continuous integration server for Java projects that are using [Gradle](https://gradle.org/). It can be set up as a webhook for public GitHub repositories where it will build and test the program, then both report the result as a commit-status in GitHub and save the result for later access.
 
 ## Documentation 
-
-INSERT JAVA DOCS
+JavaDoc for the package can be found in the JavaDoc folder in the repository. 
 
 ## Build and run
 The server is built with Java 21 using Gradle. Follow these steps to compile the project: 
 
 ### With IDE
 1. Set Java version to Java 21.
-2. Add GitHub access token to environment variables `GITHUB_COMMIT_STATUS_TOKEN`
+2. Add GitHub access token as environment variable `GITHUB_COMMIT_STATUS_TOKEN`.
 3. Import into gradle-compatible IDE and run.
 
 ### In Terminal 
 1. Set Java version to Java 21.
-2. Add GitHub access token to environment variables `GITHUB_COMMIT_STATUS_TOKEN`
+2. Add GitHub access token as environment variable `GITHUB_COMMIT_STATUS_TOKEN`
 3. Run `./gradlew run` 
 
 ## How to use:
 1. Setup GitHub to send webhooks to it. 
-1. Add GitHub access token to environment variables `GITHUB_COMMIT_STATUS_TOKEN`
+1. Add GitHub access token as environment variable `GITHUB_COMMIT_STATUS_TOKEN`
 2. Build and run the server according to instructions above
    
 The results from the build and tests will be set as the commit-status on GitHub of the last commit in the push. History of the builds can also be accessed in a web-browser at the servers URL. 
@@ -31,7 +30,7 @@ To setup the GitHub webhook go to your public repository, select settings and th
 ![GitHub Webhook settings](Assets/WebhookSetup.png)
 
 ### GitHub Access token: 
-Create a personal access token (classic) on GitHub in settings under developer settings. Name your token and fill the repository checkbox before creating the token. Add token to environment variable with the name `GITHUB_COMMIT_STATUS_TOKEN`.
+Create a personal access token (classic) on GitHub in settings under developer settings. Name your token and fill the repository checkbox before creating the token. Add token as environment variable with the name `GITHUB_COMMIT_STATUS_TOKEN`.
 
 ![GitHub Access Token](/Assets/GitHubAccess.png)
 
