@@ -25,7 +25,7 @@ public class WebHandler {
 	 * @param buildId The id of the build
 	 * @return A string representation of the build info
 	 */
-	public String buildInfoToString(int buildId) {
+	public String buildInfoToHtmlString(int buildId) {
 		StringBuilder sb = new StringBuilder();
 
 		BuildInfo build = null;

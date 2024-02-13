@@ -48,7 +48,7 @@ public class Main extends AbstractHandler {
 				if (target.startsWith("/build_")) {
 					response.getWriter().println("<br><a href=\"/\">Home</a><br></br>");
 					int buildId = Integer.parseInt(target.substring(7, target.length() - 1));
-					response.getWriter().println(webHandler.buildInfoToString(buildId));
+					response.getWriter().println(webHandler.buildInfoToHtmlString(buildId));
 				}
 
 			} catch (SQLException e) {
