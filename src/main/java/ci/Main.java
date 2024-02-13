@@ -163,6 +163,12 @@ public class Main extends AbstractHandler
 		return new Builder(path, output, testOutput);
 	}
 
+	/**
+	 * Creates a new HistoryDAO object.
+	 * This function merely exists to allow mock-testing.
+	 * @param dbPath The path to the database file.
+	 * @return The HistoryDAO.
+	 */
 	protected HistoryDAO createHistoryDAO(String dbPath) throws SQLException {
 		return new HistoryDAO(dbPath);
 	}
