@@ -3,7 +3,7 @@
 This is a continuous integration server for Java projects that are using [Gradle](https://gradle.org/). It can be set up as a webhook for public GitHub repositories where it will build and test the program, then both report the result as a commit-status in GitHub and save the result for later access.
 
 ## Documentation 
-JavaDoc for the package can be found in the JavaDoc folder in the repository. 
+JavaDoc for the package can be found in the JavaDoc folder in the repository online [HERE](https://dd2480-group-4.github.io/lab2/ci/package-summary.html).
 
 ## Build and run
 The server is built with Java 21 using Gradle. Follow these steps to compile the project: 
