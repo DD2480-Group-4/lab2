@@ -23,7 +23,7 @@ public class WebHandlerTest {
 		new BuildInfo(2, // Assuming the ID is 2 for this example
 			new PushPayload.Sender("Jane Doe", "janedoe", "jane@doe.com"),
 			List.of(new PushPayload.Commit("sha2", "commit2", new Author("Jane Doe", "janedoe", "jane@doe.com"), "commitUrl2", new String[]{"file3", "file4"})),
-			new BuildDetails(2, "Build Log 2"),
+			new BuildDetails(0, "Build Log 2"),
 			new TestDetails(2, 2, "Test Log 2"),
 			"2021-01-02T00:00:00")
 		);
@@ -51,7 +51,7 @@ public class WebHandlerTest {
 			"&emsp;&emsp;Email: jane@doe.com.<br/>" +
 			"<br/>Build Details: <br/>" +
 			"&emsp;Time: 2021-01-02T00:00:00<br/>" +
-			"&emsp;Result: 2<br/>" +
+			"&emsp;Result: Test error <br/>" +
 			"&emsp;Log: Build Log 2<br/>" +
 			"<br/>Test Details: <br/>" +
 			"&emsp;Total: 2<br/>" +
