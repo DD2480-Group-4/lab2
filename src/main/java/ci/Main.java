@@ -104,7 +104,6 @@ public class Main extends AbstractHandler
 				// Fetch history of builds from database
 				List<BuildInfo> history = historyDAO.getAllHistory();
 				WebHandler webHandler = new WebHandler(history);
-				System.out.println("hustory: " + history);
 
 				if (history.isEmpty()) {
 					response.getWriter().println("<strong>No builds found in database.</strong>");
