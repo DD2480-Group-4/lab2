@@ -16,16 +16,26 @@ The server is built with Java 21 using Gradle. Follow these steps to compile the
 4. COMMAND TO RUN HERE
 
 ## How to use:
-Build and run the server, then setup GitHub to send webhooks to it. The results from the build and tests will be set as the commit-status on GitHub of the last commit in the push. History of the builds can also be accessed in a web-browser at the servers URL. 
+1. Build and run the server
+2. Setup GitHub to send webhooks to it. 
+3. Add GitHub access token to system variables
+   
+The results from the build and tests will be set as the commit-status on GitHub of the last commit in the push. History of the builds can also be accessed in a web-browser at the servers URL. 
 
 ### GitHub Webhook setup: 
 To setup the GitHub webhook go to your public repository, select settings and then Webhooks. Click Add webhook, enter the URL to where your server is hosted, select `application/json` as content type, let the Active box be checked and click Add Webhook. 
 ![GitHub Webhook settings](Assets/WebhookSetup.png)
 
+### GitHub Access token: 
+Create a personal access token (classic) on GitHub in settings under developer settings. Name your token and fill the repository checkbox before creating the token. Add to system variables with the name `GITHUB_COMMIT_STATUS_TOKEN`.
+
+![GitHub Access Token](/Assets/GitHubAccess.png)
+
+
 ### Web Interface 
 CI HISTORY: [https://loving-perfectly-mako.ngrok-free.app](http://loving-perfectly-mako.ngrok-free.app)
 
-TODO: Display web interface functions
+
 
 # Statement of Contributions:
 All contributions of features and fixes includes accompanying tests.
@@ -52,6 +62,7 @@ All contributions of features and fixes includes accompanying tests.
 #### Robin Claesson (RobinClaesson):
 * GitHub commit status notification (Co-author).
 * History database with data access object (Lead-author).
+* Feature integrations.
 * README.md 
 
 ### Prideful Remark
