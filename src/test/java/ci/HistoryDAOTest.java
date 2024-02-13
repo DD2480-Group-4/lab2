@@ -198,7 +198,11 @@ public class HistoryDAOTest {
 	@Test
 	@DisplayName("Get History that exists")
 	void getHistory_HistoryExists_ReturnsHistory() throws SQLException {
-		BuildInfo buildInfo = historyDAO.getHistory(1);
+		int historyId = 1;
+		BuildInfo buildInfo = historyDAO.getHistory(historyId);
+
+		Assertions.assertThat(buildInfo).isNotNull();
+		Assertions.assertThat(buildInfo.getId()).isEqualTo(historyId);
 
 		ci.PushPayload.Sender sender = buildInfo.getSender();
 		Assertions.assertThat(sender).isNotNull();
@@ -262,6 +266,10 @@ public class HistoryDAOTest {
 		Assertions.assertThat(history).hasSize(2);
 
 		BuildInfo buildInfo = history.get(0);
+
+		Assertions.assertThat(buildInfo).isNotNull();
+		Assertions.assertThat(buildInfo.getId()).isEqualTo(1);
+
 		ci.PushPayload.Sender sender = buildInfo.getSender();
 		Assertions.assertThat(sender).isNotNull();
 		Assertions.assertThat(sender.name()).isEqualTo("johndoe");
@@ -299,7 +307,11 @@ public class HistoryDAOTest {
 		Assertions.assertThat(commits.get(1).url()).isEqualTo("commitUrl2");
 		Assertions.assertThat(commits.get(1).modifiedFiles()).containsExactly("File1.txt", "File2.txt");
 
+
 		buildInfo = history.get(1);
+
+		Assertions.assertThat(buildInfo).isNotNull();
+		Assertions.assertThat(buildInfo.getId()).isEqualTo(2);
 
 		sender = buildInfo.getSender();
 		Assertions.assertThat(sender).isNotNull();

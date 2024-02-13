@@ -309,7 +309,7 @@ public class HistoryDAO {
 			Sender sender = getSender(senderId);
 			List<Commit> commits = getCommitsForHistory(historyId);
 
-			history.add(new BuildInfo(sender, commits,
+			history.add(new BuildInfo(historyId, sender, commits,
 					new BuildInfo.BuildDetails(buildResult, buildLog),
 					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog)));
 
@@ -341,7 +341,7 @@ public class HistoryDAO {
 			Sender sender = getSender(senderId);
 			List<Commit> commits = getCommitsForHistory(historyId);
 
-			 return new BuildInfo(sender, commits,
+			 return new BuildInfo(historyId, sender, commits,
 					new BuildInfo.BuildDetails(buildResult, buildLog),
 					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog));
 		}
