@@ -32,7 +32,7 @@ public class MainTest {
 			}
 
 			@Override
-			protected Builder createBuilder(Path path, OutputStream output) {
+			protected Builder createBuilder(Path path, OutputStream output, OutputStream testOutput) {
 				return builder;
 			}
 		};
