@@ -16,9 +16,9 @@ The server is built with Java 21 using Gradle. Follow these steps to compile the
 4. COMMAND TO RUN HERE
 
 ## How to use:
-1. Build and run the server
-2. Setup GitHub to send webhooks to it. 
-3. Add GitHub access token to system variables
+1. Setup GitHub to send webhooks to it. 
+2. Add GitHub access token to system variables
+3. Build and run the server
    
 The results from the build and tests will be set as the commit-status on GitHub of the last commit in the push. History of the builds can also be accessed in a web-browser at the servers URL. 
 
@@ -56,6 +56,7 @@ All contributions of features and fixes includes accompanying tests.
 #### Douglas Fischer (DouglasFischer):
 * Clone and cleanup repository.
 * Feature integrations.
+* Essence document.
 
 #### Erik Winbladh (ractodev):
 * GitHub commit status notification (Lead-author).
