@@ -38,7 +38,7 @@ public class WebHandlerTest {
 	void testBuildInfoToString() {
 		WebHandler webHandler = new WebHandler(history);
 		String expectedBuildInfoString =
-			"<strong>Build Info for build 2</strong><br/>" +
+			"<strong>Build Info for build 2 on branch branch2</strong><br/>" +
 			"Sender:<br/>" +
 			"&emsp;<img src=\"jane@doe.com\" alt=\"Avatar\" width=\"50\" height=\"50\"><br/>" +
 			"&emsp;Name: Jane Doe<br/>" +
