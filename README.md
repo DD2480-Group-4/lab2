@@ -11,18 +11,18 @@ The server is built with Java 21 using Gradle. Follow these steps to compile the
 
 ### With IDE
 1. Set Java version to Java 21.
-2. Import into gradle-compatible IDE and run.
+2. Add GitHub access token to environment variables
+3. Import into gradle-compatible IDE and run.
 
 ### In Terminal 
 1. Set Java version to Java 21.
-2. Run `./gradlew build` .
-3. Run `cd builds/libs`
-4. Run `Java <.jar File>`
+2. Add GitHub access token to environment variables
+3. Run `./gradlew run` 
 
 ## How to use:
 1. Setup GitHub to send webhooks to it. 
-2. Add GitHub access token to environment variables
-3. Build and run the server
+1. Add GitHub access token to environment variables
+2. Build and run the server according to instructions above
    
 The results from the build and tests will be set as the commit-status on GitHub of the last commit in the push. History of the builds can also be accessed in a web-browser at the servers URL. 
 
