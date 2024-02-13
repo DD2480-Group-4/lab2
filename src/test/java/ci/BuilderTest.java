@@ -124,7 +124,7 @@ public class BuilderTest {
 	/**
 	 * BuilderTest:
 	 * Attempts to build a Gradle project.
-	 * The project is expected to compile successfully.
+	 * The project is expected to compile successfully and pass all tests.
 	 */
 	@Test
 	@DisplayName("Self-build success")
@@ -143,7 +143,7 @@ public class BuilderTest {
 	/**
 	 * BuilderTest:
 	 * Attempts to build a Gradle project.
-	 * The project is expected to compile successfully.
+	 * The project is expected to compile successfully and fail the test.
 	 */
 	@Test
 	@DisplayName("Self-build test error")

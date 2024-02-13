@@ -97,7 +97,7 @@ public class Builder implements AutoCloseable {
 	/**
 	 * Try to compile the project and run tests.
 	 * 
-	 * @return {@link CommitStatuses#failure} if the build fails,
+	 * @return BuildResult object with test info and {@link CommitStatuses#failure} if the build fails,
 	 *         {@link CommitStatuses#error} if the build succeeds, but the tests
 	 *         fail,
 	 *         {@link CommitStatuses#success} otherwise.
