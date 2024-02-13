@@ -123,7 +123,7 @@ public class Main extends AbstractHandler {
 					if (!target.startsWith("/build_")) {
 						for (BuildInfo build : history) {
 							response.getWriter().println("<a href=\"/build_" + build.getId() + "/\">Build Info "
-									+ build.getId() + "</a><br>");
+									+ build.getId() + " - Branch: "+ build.getBranch() + "</a><br>");
 						}
 					}
 					// Display build info for specific build if link is clicked

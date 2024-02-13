@@ -39,7 +39,7 @@ public class WebHandler {
 			return "<strong>Build not found</strong>";
 		}
 
-		sb.append("<strong>Build Info for build " + build.getId() + "</strong><br/>");
+		sb.append("<strong>Build Info for build " + build.getId() + " on branch "+ build.getBranch() + "</strong><br/>");
 		sb.append("Sender:<br/>");
 		sb.append("&emsp;<img src=\"" + build.getSender().avatarUrl() + "\" alt=\"Avatar\" width=\"50\" height=\"50\"><br/>");
 		sb.append("&emsp;Name: " + build.getSender().name() + "<br/>");
@@ -55,6 +55,7 @@ public class WebHandler {
 		}
 		sb.append("Build Details: <br/>");
 		sb.append("&emsp;Time: " + build.getBuildDate() + "<br/>");
+
 
 		CommitStatuses status = CommitStatuses.values()[build.getBuildDetails().buildResult()];
 		switch (status) {
