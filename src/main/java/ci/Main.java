@@ -1,19 +1,27 @@
 package ci;
 
+import ci.PushPayload.Commit;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-
-import ci.PushPayload.Commit;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.http.HttpClient;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
-public class Main extends AbstractHandler {
+/**
+ * Main executable for Continuous-Integration handler
+ */
+public class Main extends AbstractHandler
+{
 
 	@Override
 	public void handle(
@@ -26,10 +34,46 @@ public class Main extends AbstractHandler {
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
 
-		if (request.getMethod() == "POST") {
+		if (request.getMethod().equals("POST")) {
 			// Incoming webhook payload from GitHub
+			final String accessUrl = request.getRequestURL().toString();
+
 			PushPayload payload = new PushPayload(request.getReader().readLine());
-			printPushPayload(payload);
+			var notifier = createNotifier(payload);
+			try {
+				notifier.setCommitStatus(CommitStatuses.pending, "Working", accessUrl);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+
+			var rootDir = Path.of(".");
+
+			var buildPath = rootDir.resolve(UUID.randomUUID().toString());
+			while (buildPath.toFile().exists()) {
+				buildPath = rootDir.resolve(UUID.randomUUID().toString());
+			}
+
+			try(var builder = createBuilder(buildPath, System.out)) {
+				builder.cloneTargetRepo(payload.getCloneUrl(), payload.getBranch());
+				var result = builder.buildAndTest();
+				var desc = switch (result) {
+					case error -> "Tests failed";
+					case failure -> "Build failed";
+					case pending -> "Wait what happened here????????????????";
+					case success -> "Build successful!";
+				};
+				notifier.setCommitStatus(result, desc, accessUrl);
+			} catch (GitAPIException err) {
+				try {
+					notifier.setCommitStatus(CommitStatuses.failure, err.getLocalizedMessage(), accessUrl);
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			} finally {
+				Builder.deleteDirectory(buildPath.toFile());
+			}
 		} else {
 			// GET request from web interface
 			try {
@@ -58,6 +102,27 @@ public class Main extends AbstractHandler {
 	}
 
 	/**
+	 * Creates a new notifier from a PushPayload.
+	 * This function merely exists to allow mock-testing.
+	 * @param payload The payload to use in the notifier.
+	 * @return The notifier.
+	 */
+	protected Notifier createNotifier(PushPayload payload) {
+		return new Notifier(payload, HttpClient.newHttpClient());
+	}
+
+	/**
+	 * Creates a new builder from a path and an outputstream.
+	 * This function merely exists to allow mock-testing.
+	 * @param path The file path to build the project at.
+	 * @param output The output stream to print logs to.
+	 * @return The builder.
+	 */
+	protected Builder createBuilder(Path path, OutputStream output) {
+		return new Builder(path, output);
+	}
+	
+	/**
 	 * Prints information about PushPayload object received from GitHub webhook to standard output
 	 *
 	 * @param payload Parsed payload object
@@ -76,12 +141,12 @@ public class Main extends AbstractHandler {
 			sb.append("Author: ").append(commit.author().name());
 			sb.append(" | Message: ").append(commit.message()).append("\n");
 		}
-
+		
 		System.out.println(sb.toString());
 	}
-
+ 
 	/**
-	 * Initialize CI server
+	 * Initialize CI server 
 	 */
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(8080);
@@ -89,4 +154,5 @@ public class Main extends AbstractHandler {
 		server.start();
 		server.join();
 	}
+
 }
