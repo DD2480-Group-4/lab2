@@ -38,7 +38,7 @@ public class HistoryDAO {
 			statement.addBatch(
 					"CREATE TABLE \"senders\" (\"id\" INTEGER, \"login\" TEXT, \"url\" TEXT, \"avatarUrl\" TEXT, PRIMARY KEY(\"id\" AUTOINCREMENT))");
 			statement.addBatch(
-				"CREATE TABLE \"history\" (\"id\" INTEGER, \"senderId\" INTEGER NOT NULL, \"buildResult\" INTEGER, \"buildLog\" TEXT, \"totalTests\" REAL, \"numOfPassedTests\" TEXT, \"testLog\" TEXT, \"buildDate\" TEXT, FOREIGN KEY(\"senderId\") REFERENCES \"senders\"(\"id\"), PRIMARY KEY(\"id\" AUTOINCREMENT))");
+				"CREATE TABLE \"history\" (\"id\" INTEGER, \"senderId\" INTEGER NOT NULL, \"buildResult\" INTEGER, \"buildLog\" TEXT, \"totalTests\" REAL, \"numOfPassedTests\" TEXT, \"testLog\" TEXT, \"buildDate\" TEXT, \"branch\" TEXT, FOREIGN KEY(\"senderId\") REFERENCES \"senders\"(\"id\"), PRIMARY KEY(\"id\" AUTOINCREMENT))");
 			statement.addBatch(
 					"CREATE TABLE \"historyCommits\" (\"historyId\" INTEGER NOT NULL, \"commitId\" INTEGER NOT NULL, FOREIGN KEY(\"historyId\") REFERENCES \"history\"(\"id\"), FOREIGN KEY(\"commitId\") REFERENCES \"commits\"(\"id\"))");
 
@@ -192,7 +192,7 @@ public class HistoryDAO {
 
 		// Insert the history
 		PreparedStatement insertStatement = connection.prepareStatement(
-				"INSERT INTO history (senderId, buildResult, buildLog, totalTests, numOfPassedTests, testLog, buildDate) VALUES (?, ?, ?, ?, ?, ?, ?)");
+				"INSERT INTO history (senderId, buildResult, buildLog, totalTests, numOfPassedTests, testLog, buildDate, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		insertStatement.setInt(1, senderId);
 		insertStatement.setInt(2, buildInfo.getBuildDetails().buildResult());
 		insertStatement.setString(3, buildInfo.getBuildDetails().buildLog());
@@ -200,6 +200,7 @@ public class HistoryDAO {
 		insertStatement.setInt(5, buildInfo.getTestDetails().numOfPassedTests());
 		insertStatement.setString(6, buildInfo.getTestDetails().testLog());
 		insertStatement.setString(7, buildInfo.getBuildDate());
+		insertStatement.setString(8, buildInfo.getBranch());
 		insertStatement.execute();
 
 		ResultSet resultSet = insertStatement.getGeneratedKeys();
@@ -307,14 +308,14 @@ public class HistoryDAO {
 			int numOfPassedTests = resultSet.getInt("numOfPassedTests");
 			String testLog = resultSet.getString("testLog");
 			String buildDate = resultSet.getString("buildDate");
-
+			String branch = resultSet.getString("branch");
 			Sender sender = getSender(senderId);
 			List<Commit> commits = getCommitsForHistory(historyId);
 
 			history.add(new BuildInfo(historyId, sender, commits,
 					new BuildInfo.BuildDetails(buildResult, buildLog),
 					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog),
-					buildDate));
+					buildDate, branch));
 
 		}
 
@@ -341,6 +342,7 @@ public class HistoryDAO {
 			int numOfPassedTests = resultSet.getInt("numOfPassedTests");
 			String testLog = resultSet.getString("testLog");
 			String buildDate = resultSet.getString("buildDate");
+			String branch = resultSet.getString("branch");
 
 			Sender sender = getSender(senderId);
 			List<Commit> commits = getCommitsForHistory(historyId);
@@ -348,7 +350,7 @@ public class HistoryDAO {
 			 return new BuildInfo(historyId, sender, commits,
 					new BuildInfo.BuildDetails(buildResult, buildLog),
 					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog),
-					buildDate);
+					buildDate, branch);
 		}
 
 		return null;

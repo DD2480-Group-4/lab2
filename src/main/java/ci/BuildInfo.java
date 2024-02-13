@@ -17,6 +17,7 @@ public class BuildInfo {
 	private BuildDetails buildDetails;
 	private TestDetails testDetails;
 	private String buildDate;
+	private String branch;
 
 	/**
 	 * Creates a new BuildInfo object.
@@ -27,14 +28,16 @@ public class BuildInfo {
 	 * @param buildDetails Details on build, including result and logs
 	 * @param testDetails  Details on test, including total tests, number of tests passed and logs
 	 * @param buildDate    Date of build as string
+	 * @param branch        Branch of the build
 	 */
-	public BuildInfo(int id, Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails, String buildDate) {
+	public BuildInfo(int id, Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails, String buildDate, String branch) {
 		this.id = id;
 		this.sender = sender;
 		this.commitList = commitList;
 		this.buildDetails = buildDetails;
 		this.testDetails = testDetails;
 		this.buildDate = buildDate;
+		this.branch = branch;
 	}
 
 	/**
@@ -46,12 +49,13 @@ public class BuildInfo {
 	 * @param testDetails  Details on test, including total tests, number of tests passed and logs
 	 * @param buildDate    Date of build as LocalDateTime
 	 */
-	public BuildInfo(Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails, LocalDateTime buildDate) {
+	public BuildInfo(Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails, LocalDateTime buildDate, String branch) {
 		this.sender = sender;
 		this.commitList = commitList;
 		this.buildDetails = buildDetails;
 		this.testDetails = testDetails;
 		this.buildDate = buildDate.toString();
+		this.branch = branch;
 	}
 
 	/**
@@ -109,6 +113,15 @@ public class BuildInfo {
 	}
 
 	/**
+	 * Gets branch
+	 *
+	 * @return Branch of the build
+	 */
+	public String getBranch() {
+		return branch;
+	}
+
+	/**
 	 * Sets id of build
 	 *
 	 * @param id Build id
@@ -160,6 +173,15 @@ public class BuildInfo {
 	 */
 	public void setBuildDate(String buildDate) {
 		this.buildDate = buildDate;
+	}
+
+	/**
+	 * Sets branch
+	 *
+	 * @param branch Branch of the build
+	 */
+	public void setBranch(String branch) {
+		this.branch = branch;
 	}
 
 	/**
