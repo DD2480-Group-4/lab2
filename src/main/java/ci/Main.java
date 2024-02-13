@@ -3,6 +3,8 @@ package ci;
 import ci.BuildInfo.BuildDetails;
 import ci.BuildInfo.TestDetails;
 import ci.PushPayload.Commit;
+
+import org.apache.commons.io.output.TeeOutputStream;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -11,6 +13,8 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.io.OutputStream;
@@ -66,8 +70,12 @@ public class Main extends AbstractHandler
 				buildPath = rootDir.resolve(UUID.randomUUID().toString());
 			}
 
-			// Stream buildOutputStream = new Stream();
-			try(var builder = createBuilder(buildPath, System.out)) {
+			OutputStream buildOutput = new ByteArrayOutputStream();
+			OutputStream testOutput = new ByteArrayOutputStream();
+			TeeOutputStream buildAndStdOut = new TeeOutputStream(buildOutput, System.out);
+			TeeOutputStream testAndStdOut = new TeeOutputStream(testOutput, System.out);
+
+			try(var builder = createBuilder(buildPath, buildAndStdOut, testAndStdOut)) {
 				builder.cloneTargetRepo(payload.getCloneUrl(), payload.getBranch());
 				var result = builder.buildAndTest();
 				var desc = switch (result) {
@@ -78,8 +86,8 @@ public class Main extends AbstractHandler
 				};
 				notifier.setCommitStatus(result, desc, accessUrl);
 
-				BuildDetails buildDetails = new BuildDetails(result.ordinal(), "");
-				TestDetails testDetails = new TestDetails(0, 0, "");
+				BuildDetails buildDetails = new BuildDetails(result.ordinal(), buildOutput.toString());
+				TestDetails testDetails = new TestDetails(0, 0, testOutput.toString());
 				BuildInfo buildInfo = new BuildInfo(payload.getSender(),
 													Arrays.asList(payload.getCommits()),
 													buildDetails, testDetails, payload.getPushedAt());
@@ -151,8 +159,8 @@ public class Main extends AbstractHandler
 	 * @param output The output stream to print logs to.
 	 * @return The builder.
 	 */
-	protected Builder createBuilder(Path path, OutputStream output) {
-		return new Builder(path, output);
+	protected Builder createBuilder(Path path, OutputStream output, OutputStream testOutput) {
+		return new Builder(path, output, testOutput);
 	}
 
 	protected HistoryDAO createHistoryDAO(String dbPath) throws SQLException {

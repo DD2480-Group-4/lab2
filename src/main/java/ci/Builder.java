@@ -34,18 +34,20 @@ public class Builder implements AutoCloseable {
 
 	private final GradleConnector connector;
 	private final Path projectDir;
-	private final OutputStream output;
+	private final OutputStream buildOutput;
+	private final OutputStream testOutput;
 
 	/**
 	 * Creates a new builder.
 	 * @param projectDir The directory of the project to build.
 	 * @param output The output stream to output the logs to.
 	 */
-	public Builder(Path projectDir, OutputStream output) {
+	public Builder(Path projectDir, OutputStream buildOutput, OutputStream testOutput) {
 		this.projectDir = projectDir;
 		connector = GradleConnector.newConnector();
 		connector.forProjectDirectory(projectDir.toFile());
-		this.output = output;
+		this.buildOutput = buildOutput;
+		this.testOutput = testOutput;
 	}
 
 	/**
@@ -58,11 +60,11 @@ public class Builder implements AutoCloseable {
 	 * @param executeTasks Allows you to run tasks on the {@link BuildLauncher}.
 	 * @param handler The {@link ResultHandler}, allows you to get the result from the compilation.
 	 */
-	public void runTasks(Consumer<BuildLauncher> executeTasks, ResultHandler<? super Void> handler) {
+	public void runTasks(Consumer<BuildLauncher> executeTasks, ResultHandler<? super Void> handler, OutputStream outputStream) {
 		try (var connection = connector.connect()) {
 			var taskRunner = connection.newBuild();
-			taskRunner.setStandardOutput(output);
-			taskRunner.setStandardError(output);
+			taskRunner.setStandardOutput(outputStream);
+			taskRunner.setStandardError(outputStream);
 			executeTasks.accept(taskRunner);
 			taskRunner.run(handler);
 		}
@@ -87,11 +89,11 @@ public class Builder implements AutoCloseable {
 	public CommitStatuses buildAndTest() {
 		var handler = new BlockingResultHandler<>(Void.class);
 		try {
-			runTasks(launcher -> launcher.forTasks("assemble"), handler);
+			runTasks(launcher -> launcher.forTasks("assemble"), handler, buildOutput);
 			handler.getResult();
 
 			try {
-				runTasks(launcher -> launcher.forTasks("test"), handler);
+				runTasks(launcher -> launcher.forTasks("test"), handler, testOutput);
 				handler.getResult();
 				return CommitStatuses.success;
 			} catch (BuildException ignored) {
