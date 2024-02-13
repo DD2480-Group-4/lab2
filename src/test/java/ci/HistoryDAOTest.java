@@ -94,6 +94,103 @@ public class HistoryDAOTest {
 		Assertions.assertThat(resultSet.next()).isTrue();
 		Assertions.assertThat(resultSet.getString("TABLE_NAME")).isEqualTo("senders");
 		Assertions.assertThat(resultSet.next()).isFalse();
+
+		Statement statement = connection.createStatement();
+		resultSet = statement.executeQuery("PRAGMA table_info(history)");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("id");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.getString("pk")).isEqualTo("1");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("senderId");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("buildResult");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("buildLog");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("totalTests");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("numOfPassedTests");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("testLog");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("buildDate");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("branch");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isFalse();
+
+		resultSet = statement.executeQuery("PRAGMA table_info(historyCommits)");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("historyId");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("commitId");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.next()).isFalse();
+
+		resultSet = statement.executeQuery("PRAGMA table_info(authors)");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("id");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.getString("pk")).isEqualTo("1");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("name");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("username");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("email");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isFalse();
+
+		resultSet = statement.executeQuery("PRAGMA table_info(commits)");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("id");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.getString("pk")).isEqualTo("1");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("sha");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("message");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("authorId");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("url");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("modifiedFiles");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isFalse();
+
+		resultSet = statement.executeQuery("PRAGMA table_info(senders)");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("id");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("INTEGER");
+		Assertions.assertThat(resultSet.getString("pk")).isEqualTo("1");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("login");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("url");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isTrue();
+		Assertions.assertThat(resultSet.getString("name")).isEqualTo("avatarUrl");
+		Assertions.assertThat(resultSet.getString("type")).isEqualTo("TEXT");
+		Assertions.assertThat(resultSet.next()).isFalse();
+		
+		
 	}
 
 	/*
