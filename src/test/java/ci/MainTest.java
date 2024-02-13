@@ -24,7 +24,7 @@ public class MainTest {
 
 	/*
 	 * Handle function recieves a POST request from the github webhook.
-	 * Handle is expected to call the correct functions in the subclasses. 
+	 * Handle is expected to call the correct functions in the subclasses.
 	 */
 	@Test
 	@DisplayName("TestCloneBuildTest")
@@ -44,7 +44,7 @@ public class MainTest {
 			}
 
 			@Override
-			protected HistoryDAO createHistoryDAO(String dbPath){
+			protected HistoryDAO createHistoryDAO(String dbPath) {
 				return historyDAO;
 			}
 		};
@@ -82,7 +82,7 @@ public class MainTest {
 			Mockito.verify(historyDAO, Mockito.times(1)).addHistory(Mockito.any());
 			Mockito.verify(historyDAO, Mockito.times(1)).closeConnection();
 			Mockito.verifyNoMoreInteractions(historyDAO);
-			
+
 		} catch (IOException | ServletException e) {
 			throw new RuntimeException(e);
 		}

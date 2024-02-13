@@ -121,7 +121,7 @@ public class BuilderTest {
 	}
 
 
-	/**
+	/*
 	 * BuilderTest:
 	 * Attempts to build a Gradle project.
 	 * The project is expected to compile successfully and pass all tests.
@@ -140,7 +140,7 @@ public class BuilderTest {
 		Assertions.assertThat(buildDir.resolve("build").toFile().exists()).isFalse();
 	}
 
-	/**
+	/*
 	 * BuilderTest:
 	 * Attempts to build a Gradle project.
 	 * The project is expected to compile successfully and fail the test.
@@ -160,7 +160,7 @@ public class BuilderTest {
 	}
 
 
-	/**
+	/*
 	 * BuilderTest:
 	 * Attempts to compile a Gradle project with a syntax error.
 	 * The compilation is expected to fail.
@@ -179,7 +179,7 @@ public class BuilderTest {
 		Assertions.assertThat(buildDir.resolve("build").toFile().exists()).isFalse();
 	}
 
-	/**
+	/*
 	 * BuilderTest:
 	 * Compiles the successful project and checks that the log seems to contain the information it should.
 	 * The log should contain the string "BUILD SUCCESSFUL".

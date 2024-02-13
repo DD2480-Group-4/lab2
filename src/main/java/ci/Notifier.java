@@ -15,6 +15,9 @@ public class Notifier {
 
 	/**
 	 * Creates a notifier object with push payload-specific details
+	 *
+	 * @param payload The push payload
+	 * @param client  The HTTP client
 	 */
 	public Notifier(PushPayload payload, HttpClient client) {
 		this.payload = payload;
@@ -28,6 +31,8 @@ public class Notifier {
 	 * @param description  Description to give context regarding commit status state
 	 * @param buildInfoUrl URL to build info regarding the commit
 	 * @return true if HTTP response code is 201 (successfully updated commit status), false otherwise
+	 * @throws IOException          If an I/O error occurs
+	 * @throws InterruptedException If the operation is interrupted
 	 */
 	public boolean setCommitStatus(CommitStatuses state, String description, String buildInfoUrl) throws IOException, InterruptedException {
 		PushPayload.Commit headCommit = payload.getCommits()[payload.getCommits().length - 1];
