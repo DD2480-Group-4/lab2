@@ -20,19 +20,25 @@ public class NotifierTest {
 	private final PrintStream origOut = System.out;
 	private final PrintStream origErr = System.err;
 
+	/*
+	 * Runs before each test to set up streams for standard output and error outputs.
+	 */
 	@BeforeEach
 	void setUpStream() {
 		System.setOut(new PrintStream(out));
 		System.setErr(new PrintStream(err));
 	}
 
+	/*
+	 * Runs after each test to close streams for standard output and error outputs.
+	 */
 	@AfterEach
 	void closeStream() {
 		System.setOut(origOut);
 		System.setErr(origErr);
 	}
 
-	/**
+	/*
 	 * setCommitStatus valid Test:
 	 * Sends an HTTP request to mock HTTP client and receives success response.
 	 * Is expected to print the correct information, while only performing one
@@ -65,7 +71,7 @@ public class NotifierTest {
 		Mockito.verifyNoMoreInteractions(mockClient);
 	}
 
-	/**
+	/*
 	 * setCommitStatus invalid Test:
 	 * Sends an HTTP request to mock HTTP client and receives error response.
 	 * Is expected to print error context, while only performing one
@@ -100,7 +106,7 @@ public class NotifierTest {
 		Mockito.verifyNoMoreInteractions(mockClient);
 	}
 
-	/**
+	/*
 	 * getApiUrl test:
 	 * Generates apiUrl given payload.
 	 * Is expected to generate correct apiUrl.
@@ -119,7 +125,7 @@ public class NotifierTest {
 		Assertions.assertThat(apiUrl).isEqualTo(expectedApiUrl);
 	}
 
-	/**
+	/*
 	 * getJsonData test:
 	 * Generates jsonData given payload.
 	 * Is expected to generate correct jsonData.

@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 
 /**
  * Builder that can run gradle actions on projects.
- * Create a new builder with {@link Builder#Builder(Path, OutputStream)}} and
+ * Create a new builder with {@link Builder#Builder(Path, OutputStream, OutputStream)}} and
  * run
- * {@link Builder#runTasks(Consumer, ResultHandler)}.
+ * {@link Builder#runTasks(Consumer, ResultHandler, OutputStream)}.
  * For example:
  * try (var builder = new Builder()) {
  * builder.runTasks(
@@ -48,9 +48,10 @@ public class Builder implements AutoCloseable {
 
 	/**
 	 * Creates a new builder.
-	 * 
-	 * @param projectDir The directory of the project to build.
-	 * @param output     The output stream to output the logs to.
+	 *
+	 * @param projectDir  The directory of the project to build.
+	 * @param buildOutput The output stream to output the build logs to.
+	 * @param testOutput  The output stream to output the test logs to.
 	 */
 	public Builder(Path projectDir, OutputStream buildOutput, OutputStream testOutput) {
 		this.projectDir = projectDir;
@@ -67,13 +68,13 @@ public class Builder implements AutoCloseable {
 	 * launcher -> launcher.forTasks("build"),
 	 * new BlockingResultHandler<>(Void.class)
 	 * );
-	 * 
+	 *
 	 * @param executeTasks Allows you to run tasks on the {@link BuildLauncher}.
 	 * @param handler      The {@link ResultHandler}, allows you to get the result
 	 *                     from the compilation.
 	 */
 	public void runTasks(Consumer<BuildLauncher> executeTasks, ResultHandler<? super Void> handler,
-			OutputStream outputStream) {
+						 OutputStream outputStream) {
 		try (var connection = connector.connect()) {
 			var taskRunner = connection.newBuild();
 			taskRunner.setStandardOutput(outputStream);
@@ -85,7 +86,7 @@ public class Builder implements AutoCloseable {
 
 	/**
 	 * Removes gradle-specific files.
-	 * 
+	 *
 	 * @throws IOException If it is unable to remove the files.
 	 */
 	@Override
@@ -96,11 +97,11 @@ public class Builder implements AutoCloseable {
 
 	/**
 	 * Try to compile the project and run tests.
-	 * 
+	 *
 	 * @return BuildResult object with test info and {@link CommitStatuses#failure} if the build fails,
-	 *         {@link CommitStatuses#error} if the build succeeds, but the tests
-	 *         fail,
-	 *         {@link CommitStatuses#success} otherwise.
+	 * {@link CommitStatuses#error} if the build succeeds, but the tests
+	 * fail,
+	 * {@link CommitStatuses#success} otherwise.
 	 */
 	public BuildResults buildAndTest() {
 		var handler = new BlockingResultHandler<>(Void.class);
@@ -160,9 +161,9 @@ public class Builder implements AutoCloseable {
 			// Clone
 			System.out.println("Cloning " + targetRepoUrl + " into " + dir);
 			git = Git.cloneRepository()
-					.setURI(targetRepoUrl)
-					.setDirectory(dir)
-					.call();
+				.setURI(targetRepoUrl)
+				.setDirectory(dir)
+				.call();
 			System.out.println("Completed Cloning");
 		} catch (GitAPIException e) {
 			System.out.println("Exception occurred while cloning repository");
@@ -174,13 +175,13 @@ public class Builder implements AutoCloseable {
 			// Checkout branch
 			System.out.println("Checking out branch " + targetBranch + " of repo " + targetRepoUrl);
 			git.branchCreate()
-					.setName(targetBranch)
-					.setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
-					.setStartPoint("origin/" + targetBranch)
-					.call();
+				.setName(targetBranch)
+				.setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
+				.setStartPoint("origin/" + targetBranch)
+				.call();
 			git.checkout()
-					.setName(targetBranch)
-					.call();
+				.setName(targetBranch)
+				.call();
 			System.out.println("Completed Branch-Checkout");
 		} catch (GitAPIException e) {
 			System.out.println("Exception occurred while checking out branch");
@@ -215,6 +216,13 @@ public class Builder implements AutoCloseable {
 		}
 	}
 
+	/**
+	 * Record of the results of a build.
+	 *
+	 * @param status      The status of the build.
+	 * @param totalTests  The total number of tests run.
+	 * @param passedTests The number of tests that passed.
+	 */
 	public record BuildResults(CommitStatuses status, int totalTests, int passedTests) {
 	}
 }

@@ -28,7 +28,7 @@ public class BuildInfo {
 	 * @param buildDetails Details on build, including result and logs
 	 * @param testDetails  Details on test, including total tests, number of tests passed and logs
 	 * @param buildDate    Date of build as string
-	 * @param branch        Branch of the build
+	 * @param branch       Branch of the build
 	 */
 	public BuildInfo(int id, Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails, String buildDate, String branch) {
 		this.id = id;

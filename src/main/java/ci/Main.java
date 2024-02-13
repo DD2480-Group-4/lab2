@@ -38,10 +38,10 @@ public class Main extends AbstractHandler {
 
 	@Override
 	public void handle(
-			String target,
-			Request baseRequest,
-			HttpServletRequest request,
-			HttpServletResponse response) throws IOException, ServletException {
+		String target,
+		Request baseRequest,
+		HttpServletRequest request,
+		HttpServletResponse response) throws IOException, ServletException {
 		response.setContentType("text/html;charset=utf-8");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
@@ -92,8 +92,8 @@ public class Main extends AbstractHandler {
 
 				TestDetails testDetails = new TestDetails(result.totalTests(), result.passedTests(), testOutput.toString());
 				BuildInfo buildInfo = new BuildInfo(payload.getSender(),
-						Arrays.asList(payload.getCommits()),
-						buildDetails, testDetails, payload.getPushedAt(), payload.getBranch());
+					Arrays.asList(payload.getCommits()),
+					buildDetails, testDetails, payload.getPushedAt(), payload.getBranch());
 
 				historyDAO.addHistory(buildInfo);
 			} catch (GitAPIException err) {
@@ -123,7 +123,7 @@ public class Main extends AbstractHandler {
 					if (!target.startsWith("/build_")) {
 						for (BuildInfo build : history) {
 							response.getWriter().println("<a href=\"/build_" + build.getId() + "/\">Build Info "
-									+ build.getId() + " - Branch: "+ build.getBranch() + "</a><br>");
+								+ build.getId() + " - Branch: " + build.getBranch() + "</a><br>");
 						}
 					}
 					// Display build info for specific build if link is clicked
@@ -149,7 +149,7 @@ public class Main extends AbstractHandler {
 	/**
 	 * Creates a new notifier from a PushPayload.
 	 * This function merely exists to allow mock-testing.
-	 * 
+	 *
 	 * @param payload The payload to use in the notifier.
 	 * @return The notifier.
 	 */
@@ -160,9 +160,10 @@ public class Main extends AbstractHandler {
 	/**
 	 * Creates a new builder from a path and an outputstream.
 	 * This function merely exists to allow mock-testing.
-	 * 
-	 * @param path   The file path to build the project at.
-	 * @param output The output stream to print logs to.
+	 *
+	 * @param path       The file path to build the project at.
+	 * @param output     The outputstream to write build logs to.
+	 * @param testOutput The outputstream to write test logs to.
 	 * @return The builder.
 	 */
 	protected Builder createBuilder(Path path, OutputStream output, OutputStream testOutput) {
@@ -172,9 +173,10 @@ public class Main extends AbstractHandler {
 	/**
 	 * Creates a new HistoryDAO object.
 	 * This function merely exists to allow mock-testing.
-	 * 
+	 *
 	 * @param dbPath The path to the database file.
 	 * @return The HistoryDAO.
+	 * @throws SQLException If the database cannot be opened.
 	 */
 	protected HistoryDAO createHistoryDAO(String dbPath) throws SQLException {
 		return new HistoryDAO(dbPath);

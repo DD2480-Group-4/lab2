@@ -26,7 +26,7 @@ public class WebHandlerTest {
 			new BuildDetails(0, "Build Log 2"),
 			new TestDetails(2, 2, "Test Log 2"),
 			"2021-01-02T00:00:00", "branch2")
-		);
+	);
 
 	/*
 	 * BuildInfo to HTML String Test:
@@ -39,24 +39,24 @@ public class WebHandlerTest {
 		WebHandler webHandler = new WebHandler(history);
 		String expectedBuildInfoString =
 			"<strong>Build Info for build 2 on branch branch2</strong><br/>" +
-			"Sender:<br/>" +
-			"&emsp;<img src=\"jane@doe.com\" alt=\"Avatar\" width=\"50\" height=\"50\"><br/>" +
-			"&emsp;Name: Jane Doe<br/>" +
-			"&emsp;URL: janedoe<br/>" +
-			"<br/>Commits: <br/>" +
-			"&emsp;Id: sha2<br/>" +
-			"&emsp;Message: commit2<br/>" +
-			"&emsp;Author: Jane Doe<br/>" +
-			"&emsp;&emsp;Name: janedoe.<br/>" +
-			"&emsp;&emsp;Email: jane@doe.com.<br/>" +
-			"<br/>Build Details: <br/>" +
-			"&emsp;Time: 2021-01-02T00:00:00<br/>" +
-			"&emsp;Result: Test error <br/>" +
-			"&emsp;Log: Build Log 2<br/>" +
-			"<br/>Test Details: <br/>" +
-			"&emsp;Total: 2<br/>" +
-			"&emsp;Passed: 2<br/>" +
-			"&emsp;Log: Test Log 2<br/>";
+				"Sender:<br/>" +
+				"&emsp;<img src=\"jane@doe.com\" alt=\"Avatar\" width=\"50\" height=\"50\"><br/>" +
+				"&emsp;Name: Jane Doe<br/>" +
+				"&emsp;URL: janedoe<br/>" +
+				"<br/>Commits: <br/>" +
+				"&emsp;Id: sha2<br/>" +
+				"&emsp;Message: commit2<br/>" +
+				"&emsp;Author: Jane Doe<br/>" +
+				"&emsp;&emsp;Name: janedoe.<br/>" +
+				"&emsp;&emsp;Email: jane@doe.com.<br/>" +
+				"<br/>Build Details: <br/>" +
+				"&emsp;Time: 2021-01-02T00:00:00<br/>" +
+				"&emsp;Result: Test error <br/>" +
+				"&emsp;Log: Build Log 2<br/>" +
+				"<br/>Test Details: <br/>" +
+				"&emsp;Total: 2<br/>" +
+				"&emsp;Passed: 2<br/>" +
+				"&emsp;Log: Test Log 2<br/>";
 		Assertions.assertThat(webHandler.buildInfoToHtmlString(2)).isEqualTo(expectedBuildInfoString);
 	}
 

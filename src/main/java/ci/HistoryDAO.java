@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 import ci.PushPayload.Commit;
 import ci.PushPayload.Author;
 import ci.PushPayload.Sender;
@@ -20,6 +21,7 @@ public class HistoryDAO {
 	 * Creates a new HistoryDAO object
 	 *
 	 * @param databaseName Name of the database file
+	 * @throws SQLException If an error occurs while connecting to the database
 	 */
 	public HistoryDAO(String databaseName) throws SQLException {
 		this.databaseName = databaseName;
@@ -27,25 +29,23 @@ public class HistoryDAO {
 		// Build the database if it does not exist
 		File databaseFile = new File(databaseName);
 		if (!databaseFile.exists()) {
-			
+
 			connection = getConnection();
 			Statement statement = connection.createStatement();
 
 			statement.addBatch(
-					"CREATE TABLE \"authors\" (\"id\" INTEGER, \"name\" TEXT, \"username\" TEXT, \"email\" TEXT, PRIMARY KEY(\"id\" AUTOINCREMENT))");
+				"CREATE TABLE \"authors\" (\"id\" INTEGER, \"name\" TEXT, \"username\" TEXT, \"email\" TEXT, PRIMARY KEY(\"id\" AUTOINCREMENT))");
 			statement.addBatch(
-					"CREATE TABLE \"commits\" (\"id\" INTEGER, \"sha\" TEXT NOT NULL, \"message\" NUMERIC, \"authorId\" INTEGER NOT NULL, \"url\" TEXT, \"modifiedFiles\" TEXT, FOREIGN KEY(\"authorId\") REFERENCES \"authors\"(\"id\"), PRIMARY KEY(\"id\" AUTOINCREMENT))");
+				"CREATE TABLE \"commits\" (\"id\" INTEGER, \"sha\" TEXT NOT NULL, \"message\" NUMERIC, \"authorId\" INTEGER NOT NULL, \"url\" TEXT, \"modifiedFiles\" TEXT, FOREIGN KEY(\"authorId\") REFERENCES \"authors\"(\"id\"), PRIMARY KEY(\"id\" AUTOINCREMENT))");
 			statement.addBatch(
-					"CREATE TABLE \"senders\" (\"id\" INTEGER, \"login\" TEXT, \"url\" TEXT, \"avatarUrl\" TEXT, PRIMARY KEY(\"id\" AUTOINCREMENT))");
+				"CREATE TABLE \"senders\" (\"id\" INTEGER, \"login\" TEXT, \"url\" TEXT, \"avatarUrl\" TEXT, PRIMARY KEY(\"id\" AUTOINCREMENT))");
 			statement.addBatch(
 				"CREATE TABLE \"history\" (\"id\" INTEGER, \"senderId\" INTEGER NOT NULL, \"buildResult\" INTEGER, \"buildLog\" TEXT, \"totalTests\" REAL, \"numOfPassedTests\" TEXT, \"testLog\" TEXT, \"buildDate\" TEXT, \"branch\" TEXT, FOREIGN KEY(\"senderId\") REFERENCES \"senders\"(\"id\"), PRIMARY KEY(\"id\" AUTOINCREMENT))");
 			statement.addBatch(
-					"CREATE TABLE \"historyCommits\" (\"historyId\" INTEGER NOT NULL, \"commitId\" INTEGER NOT NULL, FOREIGN KEY(\"historyId\") REFERENCES \"history\"(\"id\"), FOREIGN KEY(\"commitId\") REFERENCES \"commits\"(\"id\"))");
+				"CREATE TABLE \"historyCommits\" (\"historyId\" INTEGER NOT NULL, \"commitId\" INTEGER NOT NULL, FOREIGN KEY(\"historyId\") REFERENCES \"history\"(\"id\"), FOREIGN KEY(\"commitId\") REFERENCES \"commits\"(\"id\"))");
 
 			statement.executeBatch();
-		}
-		else
-		{
+		} else {
 			connection = getConnection();
 		}
 
@@ -55,10 +55,11 @@ public class HistoryDAO {
 	 * Gets a connection to the database
 	 *
 	 * @return Connection to the database
+	 * @throws SQLException If an error occurs while connecting to the database
 	 */
 	public Connection getConnection() throws SQLException {
 
-		if(connection != null && !connection.isClosed())
+		if (connection != null && !connection.isClosed())
 			return connection;
 
 		try {
@@ -72,9 +73,10 @@ public class HistoryDAO {
 
 	/**
 	 * Closes the connection to the database
+	 *
+	 * @throws SQLException If an error occurs while closing the connection
 	 */
-	public void closeConnection() throws SQLException
-	{
+	public void closeConnection() throws SQLException {
 		connection.close();
 	}
 
@@ -83,6 +85,7 @@ public class HistoryDAO {
 	 *
 	 * @param author Author to add
 	 * @return ID of the author
+	 * @throws SQLException If an error occurs while adding the author
 	 */
 	public int addAuthor(Author author) throws SQLException {
 		// Check if the author already exists
@@ -96,7 +99,7 @@ public class HistoryDAO {
 
 		// Insert the author
 		PreparedStatement insertStatement = connection
-				.prepareStatement("INSERT INTO authors (name, username, email) VALUES (?, ?, ?)");
+			.prepareStatement("INSERT INTO authors (name, username, email) VALUES (?, ?, ?)");
 		insertStatement.setString(1, author.name());
 		insertStatement.setString(2, author.userName());
 		insertStatement.setString(3, author.email());
@@ -113,6 +116,7 @@ public class HistoryDAO {
 	 *
 	 * @param sender Sender to add
 	 * @return ID of the sender
+	 * @throws SQLException If an error occurs while adding the sender
 	 */
 	public int addSender(Sender sender) throws SQLException {
 
@@ -127,7 +131,7 @@ public class HistoryDAO {
 
 		// Insert the sender
 		PreparedStatement insertStatement = connection
-				.prepareStatement("INSERT INTO senders (login, url, avatarUrl) VALUES (?, ?, ?)");
+			.prepareStatement("INSERT INTO senders (login, url, avatarUrl) VALUES (?, ?, ?)");
 		insertStatement.setString(1, sender.name());
 		insertStatement.setString(2, sender.url());
 		insertStatement.setString(3, sender.avatarUrl());
@@ -144,6 +148,7 @@ public class HistoryDAO {
 	 *
 	 * @param commit Commit to add
 	 * @return ID of the commit
+	 * @throws SQLException If an error occurs while adding the commit
 	 */
 	public int addCommit(Commit commit) throws SQLException {
 
@@ -161,7 +166,7 @@ public class HistoryDAO {
 		String modifiedFiles = String.join(",", commit.modifiedFiles());
 
 		PreparedStatement insertStatement = connection.prepareStatement(
-				"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES (?, ?, ?, ?, ?)");
+			"INSERT INTO commits (sha, message, authorId, url, modifiedFiles) VALUES (?, ?, ?, ?, ?)");
 		insertStatement.setString(1, commit.sha());
 		insertStatement.setString(2, commit.message());
 		insertStatement.setInt(3, authorId);
@@ -180,6 +185,7 @@ public class HistoryDAO {
 	 *
 	 * @param buildInfo Build information to add
 	 * @return ID of the history
+	 * @throws SQLException If an error occurs while adding the history
 	 */
 	public int addHistory(BuildInfo buildInfo) throws SQLException {
 
@@ -192,7 +198,7 @@ public class HistoryDAO {
 
 		// Insert the history
 		PreparedStatement insertStatement = connection.prepareStatement(
-				"INSERT INTO history (senderId, buildResult, buildLog, totalTests, numOfPassedTests, testLog, buildDate, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+			"INSERT INTO history (senderId, buildResult, buildLog, totalTests, numOfPassedTests, testLog, buildDate, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		insertStatement.setInt(1, senderId);
 		insertStatement.setInt(2, buildInfo.getBuildDetails().buildResult());
 		insertStatement.setString(3, buildInfo.getBuildDetails().buildLog());
@@ -209,7 +215,7 @@ public class HistoryDAO {
 		// Connect the history and commits
 		for (int commitId : commitIds) {
 			PreparedStatement insertHistoryCommits = connection
-					.prepareStatement("INSERT INTO historyCommits (historyId, commitId) VALUES (?, ?)");
+				.prepareStatement("INSERT INTO historyCommits (historyId, commitId) VALUES (?, ?)");
 			insertHistoryCommits.setInt(1, historyId);
 			insertHistoryCommits.setInt(2, commitId);
 			insertHistoryCommits.execute();
@@ -223,6 +229,7 @@ public class HistoryDAO {
 	 *
 	 * @param id ID of the author
 	 * @return Author object
+	 * @throws SQLException If an error occurs while getting the author
 	 */
 	public Author getAuthor(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM authors WHERE id=?");
@@ -231,8 +238,8 @@ public class HistoryDAO {
 
 		if (resultSet.next()) {
 			return new Author(resultSet.getString("name"),
-					resultSet.getString("username"),
-					resultSet.getString("email"));
+				resultSet.getString("username"),
+				resultSet.getString("email"));
 		}
 
 		return null;
@@ -243,10 +250,11 @@ public class HistoryDAO {
 	 *
 	 * @param historyId ID of the history
 	 * @return List of commits associated to the history
+	 * @throws SQLException If an error occurs while getting the commits
 	 */
 	public List<Commit> getCommitsForHistory(int historyId) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement(
-				"SELECT id, sha, message, authorId, url, modifiedFiles FROM commits JOIN historyCommits ON id = commitId WHERE historyId = ?");
+			"SELECT id, sha, message, authorId, url, modifiedFiles FROM commits JOIN historyCommits ON id = commitId WHERE historyId = ?");
 		preparedStatement.setInt(1, historyId);
 		ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -256,10 +264,10 @@ public class HistoryDAO {
 			String[] modifiedFiles = resultSet.getString("modifiedFiles").split(",");
 
 			commits.add(new Commit(resultSet.getString("sha"),
-					resultSet.getString("message"),
-					author,
-					resultSet.getString("url"),
-					modifiedFiles));
+				resultSet.getString("message"),
+				author,
+				resultSet.getString("url"),
+				modifiedFiles));
 
 		}
 
@@ -271,6 +279,7 @@ public class HistoryDAO {
 	 *
 	 * @param id ID of the sender
 	 * @return Sender object
+	 * @throws SQLException If an error occurs while getting the sender
 	 */
 	public Sender getSender(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM senders WHERE id=?");
@@ -279,8 +288,8 @@ public class HistoryDAO {
 
 		if (resultSet.next()) {
 			return new Sender(resultSet.getString("login"),
-					resultSet.getString("url"),
-					resultSet.getString("avatarUrl"));
+				resultSet.getString("url"),
+				resultSet.getString("avatarUrl"));
 		}
 
 		return null;
@@ -290,6 +299,7 @@ public class HistoryDAO {
 	 * Gets all history from the database
 	 *
 	 * @return List of BuildInfo objects
+	 * @throws SQLException If an error occurs while getting the history
 	 */
 	public List<BuildInfo> getAllHistory() throws SQLException {
 
@@ -297,7 +307,7 @@ public class HistoryDAO {
 
 		Statement statement = connection.createStatement();
 		ResultSet resultSet = statement.executeQuery(
-				"SELECT * FROM history");
+			"SELECT * FROM history");
 
 		while (resultSet.next()) {
 			int historyId = resultSet.getInt("id");
@@ -313,9 +323,9 @@ public class HistoryDAO {
 			List<Commit> commits = getCommitsForHistory(historyId);
 
 			history.add(new BuildInfo(historyId, sender, commits,
-					new BuildInfo.BuildDetails(buildResult, buildLog),
-					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog),
-					buildDate, branch));
+				new BuildInfo.BuildDetails(buildResult, buildLog),
+				new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog),
+				buildDate, branch));
 
 		}
 
@@ -327,6 +337,7 @@ public class HistoryDAO {
 	 *
 	 * @param id ID of the history
 	 * @return BuildInfo object
+	 * @throws SQLException If an error occurs while getting the history
 	 */
 	public BuildInfo getHistory(int id) throws SQLException {
 		PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM history WHERE id=?");
@@ -347,10 +358,10 @@ public class HistoryDAO {
 			Sender sender = getSender(senderId);
 			List<Commit> commits = getCommitsForHistory(historyId);
 
-			 return new BuildInfo(historyId, sender, commits,
-					new BuildInfo.BuildDetails(buildResult, buildLog),
-					new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog),
-					buildDate, branch);
+			return new BuildInfo(historyId, sender, commits,
+				new BuildInfo.BuildDetails(buildResult, buildLog),
+				new BuildInfo.TestDetails(totalTests, numOfPassedTests, testLog),
+				buildDate, branch);
 		}
 
 		return null;

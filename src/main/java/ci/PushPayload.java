@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Represent payload from GitHub webhook on push events
- * 
  */
 public class PushPayload {
 	private final String repo;
@@ -25,8 +24,10 @@ public class PushPayload {
 
 	/**
 	 * Creates a PushPayload object
-	 * 
+	 *
 	 * @param requestJsonPayload Payload json from webhook HTTP request
+	 * @throws JsonProcessingException If an error occurs while processing JSON
+	 * @throws IOException             If an I/O error occurs
 	 */
 	public PushPayload(String requestJsonPayload) throws JsonProcessingException, IOException {
 		JsonNode payloadNode = new ObjectMapper().readTree(requestJsonPayload);
@@ -48,9 +49,9 @@ public class PushPayload {
 			String url = commitNode.get("url").asText();
 
 			Author author = new Author(
-					commitNode.get("author").get("name").asText(),
-					commitNode.get("author").get("username").asText(),
-					commitNode.get("author").get("email").asText());
+				commitNode.get("author").get("name").asText(),
+				commitNode.get("author").get("username").asText(),
+				commitNode.get("author").get("email").asText());
 
 			List<String> modifiedFilesList = new ArrayList<String>();
 
@@ -62,9 +63,9 @@ public class PushPayload {
 		}
 
 		sender = new Sender(
-				payloadNode.get("sender").get("login").asText(),
-				payloadNode.get("sender").get("url").asText(),
-				payloadNode.get("sender").get("avatar_url").asText());
+			payloadNode.get("sender").get("login").asText(),
+			payloadNode.get("sender").get("url").asText(),
+			payloadNode.get("sender").get("avatar_url").asText());
 
 	}
 
@@ -73,11 +74,13 @@ public class PushPayload {
 	 *
 	 * @return Full repository name (owner + repo)
 	 */
-	public String getRepo() { return repo; }
+	public String getRepo() {
+		return repo;
+	}
 
 	/**
 	 * Gets branch
-	 * 
+	 *
 	 * @return Name of git branch in payload
 	 */
 	public String getBranch() {
@@ -86,7 +89,7 @@ public class PushPayload {
 
 	/**
 	 * Gets clone url
-	 * 
+	 *
 	 * @return Url to clone repository
 	 */
 	public String getCloneUrl() {
@@ -95,7 +98,7 @@ public class PushPayload {
 
 	/**
 	 * Gets time for git push
-	 * 
+	 *
 	 * @return Local time for push event
 	 */
 	public LocalDateTime getPushedAt() {
@@ -104,7 +107,7 @@ public class PushPayload {
 
 	/**
 	 * Gets all commits in push
-	 * 
+	 *
 	 * @return Array of all commit object in push
 	 */
 	public Commit[] getCommits() {
@@ -113,7 +116,7 @@ public class PushPayload {
 
 	/**
 	 * Gets sender
-	 * 
+	 *
 	 * @return Sender object for push event
 	 */
 	public Sender getSender() {
@@ -122,7 +125,7 @@ public class PushPayload {
 
 	/**
 	 * Commit author information
-	 * 
+	 *
 	 * @param name     Name of author
 	 * @param userName Username of author
 	 * @param email    email of author
@@ -133,7 +136,7 @@ public class PushPayload {
 	/**
 	 * Git commit information
 	 *
-	 * @param sha			Commit hash (id)
+	 * @param sha           Commit hash (id)
 	 * @param message       Commit message
 	 * @param author        Commit author
 	 * @param url           Commit url
@@ -144,9 +147,9 @@ public class PushPayload {
 
 	/**
 	 * GitHub user triggering webhook event
-	 * 
-	 * @param name Name of sender
-	 * @param url GitHub user Url
+	 *
+	 * @param name      Name of sender
+	 * @param url       GitHub user Url
 	 * @param avatarUrl GitHub avatar of user
 	 */
 	public record Sender(String name, String url, String avatarUrl) {

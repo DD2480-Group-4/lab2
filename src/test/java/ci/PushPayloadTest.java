@@ -36,7 +36,7 @@ public class PushPayloadTest {
 		Assertions.assertThat(payload.getBranch()).isEqualTo("push_branch");
 
 		LocalDateTime expectedPushTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(1707217745),
-				ZoneId.systemDefault());
+			ZoneId.systemDefault());
 		Assertions.assertThat(payload.getPushedAt()).isEqualTo(expectedPushTime);
 
 		PushPayload.Author expectedAuthor = new Author("ractodev", "ractodev", "erik.j.winbladh@gmail.com");
@@ -47,14 +47,14 @@ public class PushPayloadTest {
 		Assertions.assertThat(commits[0].message()).isEqualTo("moc push");
 		Assertions.assertThat(commits[0].author()).isEqualTo(expectedAuthor);
 		Assertions.assertThat(commits[0].url())
-				.isEqualTo("https://github.com/DD2480-Group-4/lab2/commit/7efa6befd4d726a4197de78595c750f1aef2cbe3");
+			.isEqualTo("https://github.com/DD2480-Group-4/lab2/commit/7efa6befd4d726a4197de78595c750f1aef2cbe3");
 		Assertions.assertThat(commits[1].message()).isEqualTo("moc push2");
 		Assertions.assertThat(commits[1].author()).isEqualTo(expectedAuthor);
 		Assertions.assertThat(commits[1].url())
-				.isEqualTo("https://github.com/DD2480-Group-4/lab2/commit/17a4c2ec28144d4b195d2e7dee7e605f66ce65f8");
+			.isEqualTo("https://github.com/DD2480-Group-4/lab2/commit/17a4c2ec28144d4b195d2e7dee7e605f66ce65f8");
 
 		PushPayload.Sender expectedSender = new Sender("ractodev", "https://api.github.com/users/ractodev",
-				"https://avatars.githubusercontent.com/u/78312752?v=4");
+			"https://avatars.githubusercontent.com/u/78312752?v=4");
 		PushPayload.Sender sender = payload.getSender();
 		Assertions.assertThat(sender).isEqualTo(expectedSender);
 	}

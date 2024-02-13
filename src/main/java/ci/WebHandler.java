@@ -39,7 +39,7 @@ public class WebHandler {
 			return "<strong>Build not found</strong>";
 		}
 
-		sb.append("<strong>Build Info for build " + build.getId() + " on branch "+ build.getBranch() + "</strong><br/>");
+		sb.append("<strong>Build Info for build " + build.getId() + " on branch " + build.getBranch() + "</strong><br/>");
 		sb.append("Sender:<br/>");
 		sb.append("&emsp;<img src=\"" + build.getSender().avatarUrl() + "\" alt=\"Avatar\" width=\"50\" height=\"50\"><br/>");
 		sb.append("&emsp;Name: " + build.getSender().name() + "<br/>");
