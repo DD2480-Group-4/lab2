@@ -35,7 +35,15 @@ Create a personal access token (classic) on GitHub in settings under developer s
 ### Web Interface 
 CI HISTORY: [https://loving-perfectly-mako.ngrok-free.app](http://loving-perfectly-mako.ngrok-free.app)
 
+Main page of the web interface display shows a list of all saved history. Each entry is a link to a pages displaying information about that build and tests. Each entry X is also accessible at `https://loving-perfectly-mako.ngrok-free.app/build_X/`. 
 
+![History index page](/Assets/Index.png)
+![History infor page](/Assets/History.png)
+
+## Compilation and Test implementation
+The compilation and testing of a given project is implemented [gradle's java tooling library](https://docs.gradle.org/current/javadoc/org/gradle/tooling/package-summary.html) for building and testing gradle projects. 
+
+Our usage of these functions are done by having three test projects. One that compiles and passes all tests, one that compiles but fails the tests, and one that fails the builds. Our implementation has one unit test for each of these three projects, and it is asserted that the build results meets the expectations. 
 
 # Statement of Contributions:
 All contributions of features and fixes includes accompanying tests.
