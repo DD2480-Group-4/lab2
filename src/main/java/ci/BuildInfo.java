@@ -3,6 +3,8 @@ package ci;
 import ci.PushPayload.Sender;
 import ci.PushPayload.Commit;
 
+import java.security.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -14,6 +16,7 @@ public class BuildInfo {
 	private List<Commit> commitList;
 	private BuildDetails buildDetails;
 	private TestDetails testDetails;
+	private String buildDate;
 
 	/**
 	 * Creates a new BuildInfo object.
@@ -23,13 +26,15 @@ public class BuildInfo {
 	 * @param commitList   List of commits associated with push payload
 	 * @param buildDetails Details on build, including result and logs
 	 * @param testDetails  Details on test, including total tests, number of tests passed and logs
+	 * @param buildDate    Date of build as string
 	 */
-	public BuildInfo(int id, Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails) {
+	public BuildInfo(int id, Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails, String buildDate) {
 		this.id = id;
 		this.sender = sender;
 		this.commitList = commitList;
 		this.buildDetails = buildDetails;
 		this.testDetails = testDetails;
+		this.buildDate = buildDate;
 	}
 
 	/**
@@ -39,12 +44,14 @@ public class BuildInfo {
 	 * @param commitList   List of commits associated with push payload
 	 * @param buildDetails Details on build, including result and logs
 	 * @param testDetails  Details on test, including total tests, number of tests passed and logs
+	 * @param buildDate    Date of build as LocalDateTime
 	 */
-	public BuildInfo(Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails) {
+	public BuildInfo(Sender sender, List<Commit> commitList, BuildDetails buildDetails, TestDetails testDetails, LocalDateTime buildDate) {
 		this.sender = sender;
 		this.commitList = commitList;
 		this.buildDetails = buildDetails;
 		this.testDetails = testDetails;
+		this.buildDate = buildDate.toString();
 	}
 
 	/**
@@ -93,6 +100,15 @@ public class BuildInfo {
 	}
 
 	/**
+	 * Gets build date
+	 *
+	 * @return Date of build as string
+	 */
+	public String getBuildDate() {
+		return buildDate;
+	}
+
+	/**
 	 * Sets id of build
 	 *
 	 * @param id Build id
@@ -135,6 +151,15 @@ public class BuildInfo {
 	 */
 	public void setTestDetails(TestDetails testDetails) {
 		this.testDetails = testDetails;
+	}
+
+	/**
+	 * Sets build date
+	 *
+	 * @param buildDate Date of build as string
+	 */
+	public void setBuildDate(String buildDate) {
+		this.buildDate = buildDate;
 	}
 
 	/**

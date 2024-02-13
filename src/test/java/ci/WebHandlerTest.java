@@ -17,14 +17,16 @@ public class WebHandlerTest {
 			new PushPayload.Sender("John Doe", "johndoe", "john@doe.com"),
 			List.of(new PushPayload.Commit("sha1", "commit1", new Author("Mr Bean", "mrbean", "beanAndTeddy@funny.org"), "commitUrl1", new String[]{"file1", "file2"})),
 			new BuildDetails(1, "Build Log 1"),
-			new TestDetails(1, 1, "Test Log 1")
+			new TestDetails(1, 1, "Test Log 1"),
+			"2021-01-01T00:00:00"
 		),
 		new BuildInfo(2, // Assuming the ID is 2 for this example
 			new PushPayload.Sender("Jane Doe", "janedoe", "jane@doe.com"),
 			List.of(new PushPayload.Commit("sha2", "commit2", new Author("Jane Doe", "janedoe", "jane@doe.com"), "commitUrl2", new String[]{"file3", "file4"})),
 			new BuildDetails(2, "Build Log 2"),
-			new TestDetails(2, 2, "Test Log 2")
-		));
+			new TestDetails(2, 2, "Test Log 2"),
+			"2021-01-02T00:00:00")
+		);
 
 	/*
 	 * BuildInfo to HTML String Test:
