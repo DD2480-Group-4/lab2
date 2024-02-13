@@ -132,7 +132,7 @@ public class BuilderTest {
 		var buildDir = Path.of("./src/test/resources/build_success");
 		try (var builder = new Builder(buildDir, System.out, System.out)) {
 			var expectedResult = new ci.Builder.BuildResults(CommitStatuses.success, 1, 1);
-			Assertions.assertThat(builder.buildAndTest()).isNotEqualTo(expectedResult);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(expectedResult);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
