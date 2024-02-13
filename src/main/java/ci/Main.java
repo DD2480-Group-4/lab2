@@ -81,18 +81,23 @@ public class Main extends AbstractHandler
 				HistoryDAO dao = new HistoryDAO("builds.db");
 				List<BuildInfo> history = dao.getAllHistory();
 				WebHandler webHandler = new WebHandler(history);
+				System.out.println("history: " + history);
 
-				// Display links to all builds from history
-				if (!target.startsWith("/build_")) {
-					for (BuildInfo build : history) {
-						response.getWriter().println("<a href=\"/build_" + build.getId() + "/\">Build Info " + build.getId() + "</a><br>");
+				if (history.isEmpty()) {
+					response.getWriter().println("<strong>No builds found in database.</strong>");
+				} else {
+					// Display links to all builds from history
+					if (!target.startsWith("/build_")) {
+						for (BuildInfo build : history) {
+							response.getWriter().println("<a href=\"/build_" + build.getId() + "/\">Build Info " + build.getId() + "</a><br>");
+						}
 					}
-				}
-				// Display build info for specific build if link is clicked
-				if (target.startsWith("/build_")) {
-					response.getWriter().println("<br><a href=\"/\">Home</a><br></br>");
-					int buildId = Integer.parseInt(target.substring(7, target.length() - 1));
-					response.getWriter().println(webHandler.buildInfoToHtmlString(buildId));
+					// Display build info for specific build if link is clicked
+					if (target.startsWith("/build_")) {
+						response.getWriter().println("<br><a href=\"/\">Home</a><br></br>");
+						int buildId = Integer.parseInt(target.substring(7, target.length() - 1));
+						response.getWriter().println(webHandler.buildInfoToHtmlString(buildId));
+					}
 				}
 
 			} catch (SQLException e) {
