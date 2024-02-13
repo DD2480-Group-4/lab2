@@ -82,7 +82,7 @@ public class Main extends AbstractHandler
 				TestDetails testDetails = new TestDetails(0, 0, "");
 				BuildInfo buildInfo = new BuildInfo(payload.getSender(),
 													Arrays.asList(payload.getCommits()),
-													buildDetails, testDetails);
+													buildDetails, testDetails, payload.getPushedAt());
 
 				historyDAO.addHistory(buildInfo);
 			} catch (GitAPIException err) {
