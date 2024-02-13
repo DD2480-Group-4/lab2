@@ -10,11 +10,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
-/** Main executable for Continuous-Integration handler
- */
-public class Main extends AbstractHandler
-{
+public class Main extends AbstractHandler {
 
 	@Override
 	public void handle(
@@ -27,20 +26,43 @@ public class Main extends AbstractHandler
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
 
-		PushPayload payload = new PushPayload(request.getReader().readLine());
+		if (request.getMethod() == "POST") {
+			// Incoming webhook payload from GitHub
+			PushPayload payload = new PushPayload(request.getReader().readLine());
+			printPushPayload(payload);
+		} else {
+			// GET request from web interface
+			try {
+				// Fetch history of builds from database
+				HistoryDAO dao = new HistoryDAO("builds.db");
+				List<BuildInfo> history = dao.getAllHistory();
+				WebHandler webHandler = new WebHandler(history);
 
-		printPushPayload(payload);
-		
+				// Display links to all builds from history
+				if (!target.startsWith("/build_")) {
+					for (BuildInfo build : history) {
+						response.getWriter().println("<a href=\"/build_" + build.getId() + "/\">Build Info " + build.getId() + "</a><br>");
+					}
+				}
+				// Display build info for specific build if link is clicked
+				if (target.startsWith("/build_")) {
+					response.getWriter().println("<br><a href=\"/\">Home</a><br></br>");
+					int buildId = Integer.parseInt(target.substring(7, target.length() - 1));
+					response.getWriter().println(webHandler.buildInfoToHtmlString(buildId));
+				}
 
-		response.getWriter().println("CI job done");
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	/**
 	 * Prints information about PushPayload object received from GitHub webhook to standard output
+	 *
 	 * @param payload Parsed payload object
 	 */
-	private void printPushPayload(PushPayload payload)
-	{
+	private void printPushPayload(PushPayload payload) {
 		System.out.println("-------------------------");
 		StringBuilder sb = new StringBuilder();
 		sb.append("CI job started\n");
@@ -54,11 +76,12 @@ public class Main extends AbstractHandler
 			sb.append("Author: ").append(commit.author().name());
 			sb.append(" | Message: ").append(commit.message()).append("\n");
 		}
-		
+
 		System.out.println(sb.toString());
 	}
- 
-	/** Initialize CI server 
+
+	/**
+	 * Initialize CI server
 	 */
 	public static void main(String[] args) throws Exception {
 		Server server = new Server(8080);
@@ -66,5 +89,4 @@ public class Main extends AbstractHandler
 		server.start();
 		server.join();
 	}
-
 }
