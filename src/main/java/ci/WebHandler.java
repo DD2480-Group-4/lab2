@@ -55,7 +55,23 @@ public class WebHandler {
 		}
 		sb.append("Build Details: <br/>");
 		sb.append("&emsp;Time: " + build.getBuildDate() + "<br/>");
-		sb.append("&emsp;Result: " + build.getBuildDetails().buildResult() + "<br/>");
+
+		CommitStatuses status = CommitStatuses.values()[build.getBuildDetails().buildResult()];
+		switch (status) {
+			case success:
+				sb.append("&emsp;Result: success <br/>");
+				break;
+			case error:
+				sb.append("&emsp;Result: Test error <br/>");
+				break;
+			case failure:
+				sb.append("&emsp;Result: Build failure <br/>");
+				break;
+			default:
+				sb.append("&emsp;Result: " + status.toString() + " <br/>");
+
+				break;
+		}
 		sb.append("&emsp;Log: " + build.getBuildDetails().buildLog() + "<br/>");
 		sb.append("<br/>Test Details: <br/>");
 		sb.append("&emsp;Total: " + build.getTestDetails().totalTests() + "<br/>");

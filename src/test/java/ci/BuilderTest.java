@@ -40,7 +40,7 @@ public class BuilderTest {
 		// Creates the remote dir
 		testRemote.mkdirs();
 
-		try (Builder builder = new Builder(Path.of(dirPath), System.out)) {
+		try (Builder builder = new Builder(Path.of(dirPath), System.out, System.out)) {
 
 			Git git = Git.init().setDirectory(testRemote).call();
 			// Create a file in the master branch of the repository
@@ -124,14 +124,15 @@ public class BuilderTest {
 	/**
 	 * BuilderTest:
 	 * Attempts to build a Gradle project.
-	 * The project is expected to compile successfully.
+	 * The project is expected to compile successfully and pass all tests.
 	 */
 	@Test
 	@DisplayName("Self-build success")
 	void buildAndTestProject() {
 		var buildDir = Path.of("./src/test/resources/build_success");
-		try (var builder = new Builder(buildDir, System.out)) {
-			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.success);
+		try (var builder = new Builder(buildDir, System.out, System.out)) {
+			var expectedResult = new ci.Builder.BuildResults(CommitStatuses.success, 1, 1);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(expectedResult);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -142,14 +143,15 @@ public class BuilderTest {
 	/**
 	 * BuilderTest:
 	 * Attempts to build a Gradle project.
-	 * The project is expected to compile successfully.
+	 * The project is expected to compile successfully and fail the test.
 	 */
 	@Test
 	@DisplayName("Self-build test error")
 	void buildProjectAndFailTest() {
 		var buildDir = Path.of("./src/test/resources/build_success_test_fail");
-		try (var builder = new Builder(buildDir, System.out)) {
-			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.error);
+		try (var builder = new Builder(buildDir, System.out, System.out)) {
+			var expectedResult = new ci.Builder.BuildResults(CommitStatuses.error, 1, 0);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(expectedResult);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -167,8 +169,9 @@ public class BuilderTest {
 	@DisplayName("Self-build failure")
 	void buildFail() {
 		var buildDir = Path.of("./src/test/resources/build_fail");
-		try (var builder = new Builder(buildDir, System.out)) {
-			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.failure);
+		try (var builder = new Builder(buildDir, System.out, System.out)) {
+			var expectedResult = new ci.Builder.BuildResults(CommitStatuses.failure, 0, 0);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(expectedResult);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -186,7 +189,7 @@ public class BuilderTest {
 	void testOutputStream() {
 		var buildDir = Path.of("./src/test/resources/build_success");
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try (var builder = new Builder(buildDir, new PrintStream(out))) {
+		try (var builder = new Builder(buildDir, new PrintStream(out), new PrintStream(out))) {
 			builder.buildAndTest();
 			Assertions.assertThat(out.toString().contains("BUILD SUCCESSFUL")).isTrue();
 		} catch (IOException e) {
