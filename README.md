@@ -16,12 +16,12 @@ The server is built with Java 21 using Gradle. Follow these steps to compile the
 ### In Terminal 
 1. Set Java version to Java 21.
 2. Run `./gradlew build` .
-3. `cd <BUILD PATH>`
-4. COMMAND TO RUN HERE
+3. Run `cd builds/libs`
+4. Run `Java <.jar File>`
 
 ## How to use:
 1. Setup GitHub to send webhooks to it. 
-2. Add GitHub access token to system variables
+2. Add GitHub access token to environment variables
 3. Build and run the server
    
 The results from the build and tests will be set as the commit-status on GitHub of the last commit in the push. History of the builds can also be accessed in a web-browser at the servers URL. 
@@ -31,7 +31,7 @@ To setup the GitHub webhook go to your public repository, select settings and th
 ![GitHub Webhook settings](Assets/WebhookSetup.png)
 
 ### GitHub Access token: 
-Create a personal access token (classic) on GitHub in settings under developer settings. Name your token and fill the repository checkbox before creating the token. Add to system variables with the name `GITHUB_COMMIT_STATUS_TOKEN`.
+Create a personal access token (classic) on GitHub in settings under developer settings. Name your token and fill the repository checkbox before creating the token. Add token to environment variable with the name `GITHUB_COMMIT_STATUS_TOKEN`.
 
 ![GitHub Access Token](/Assets/GitHubAccess.png)
 
@@ -48,6 +48,11 @@ Main page of the web interface display shows a list of all saved history. Each e
 The compilation and testing of a given project is implemented [gradle's java tooling library](https://docs.gradle.org/current/javadoc/org/gradle/tooling/package-summary.html) for building and testing gradle projects. 
 
 Our usage of these functions are done by having three test projects. One that compiles and passes all tests, one that compiles but fails the tests, and one that fails the builds. Our implementation has one unit test for each of these three projects, and it is asserted that the build results meets the expectations. 
+
+## Notification implementation 
+The notifications is delivered as commit-statuses on GitHub. They are implemented with REST API-calls to GitHub servers using personal access tokens (see how to use section). 
+
+Unit testing of this feature is done by mocking the HttpClient with [Mockito](https://github.com/mockito/mockito). This allows us to verify that the API made to GitHubs server are as expected without any actual API calls being made. 
 
 # Statement of Contributions:
 All contributions of features and fixes includes accompanying tests.
