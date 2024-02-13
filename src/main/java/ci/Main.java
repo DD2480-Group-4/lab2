@@ -1,5 +1,7 @@
 package ci;
 
+import ci.BuildInfo.BuildDetails;
+import ci.BuildInfo.TestDetails;
 import ci.PushPayload.Commit;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -16,8 +18,10 @@ import java.net.http.HttpClient;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Main executable for Continuous-Integration handler
@@ -35,6 +39,13 @@ public class Main extends AbstractHandler
 		response.setContentType("text/html;charset=utf-8");
 		response.setStatus(HttpServletResponse.SC_OK);
 		baseRequest.setHandled(true);
+
+		HistoryDAO historyDAO;
+		try {
+			historyDAO = createHistoryDAO("builds.db");
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 
 		if (request.getMethod().equals("POST")) {
 			// Incoming webhook payload from GitHub
@@ -55,6 +66,7 @@ public class Main extends AbstractHandler
 				buildPath = rootDir.resolve(UUID.randomUUID().toString());
 			}
 
+			// Stream buildOutputStream = new Stream();
 			try(var builder = createBuilder(buildPath, System.out)) {
 				builder.cloneTargetRepo(payload.getCloneUrl(), payload.getBranch());
 				var result = builder.buildAndTest();
@@ -65,6 +77,14 @@ public class Main extends AbstractHandler
 					case success -> "Build successful!";
 				};
 				notifier.setCommitStatus(result, desc, accessUrl);
+
+				BuildDetails buildDetails = new BuildDetails(result.ordinal(), "");
+				TestDetails testDetails = new TestDetails(0, 0, "");
+				BuildInfo buildInfo = new BuildInfo(payload.getSender(),
+													Arrays.asList(payload.getCommits()),
+													buildDetails, testDetails);
+
+				historyDAO.addHistory(buildInfo);
 			} catch (GitAPIException err) {
 				try {
 					notifier.setCommitStatus(CommitStatuses.failure, err.getLocalizedMessage(), accessUrl);
@@ -73,6 +93,8 @@ public class Main extends AbstractHandler
 				}
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
 			} finally {
 				Builder.deleteDirectory(buildPath.toFile());
 			}
@@ -80,8 +102,7 @@ public class Main extends AbstractHandler
 			// GET request from web interface
 			try {
 				// Fetch history of builds from database
-				HistoryDAO dao = new HistoryDAO("builds.db");
-				List<BuildInfo> history = dao.getAllHistory();
+				List<BuildInfo> history = historyDAO.getAllHistory();
 				WebHandler webHandler = new WebHandler(history);
 				System.out.println("hustory: " + history);
 
@@ -106,6 +127,12 @@ public class Main extends AbstractHandler
 				throw new RuntimeException(e);
 			}
 		}
+
+		try {
+			historyDAO.closeConnection();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
@@ -127,6 +154,10 @@ public class Main extends AbstractHandler
 	 */
 	protected Builder createBuilder(Path path, OutputStream output) {
 		return new Builder(path, output);
+	}
+
+	protected HistoryDAO createHistoryDAO(String dbPath) throws SQLException {
+		return new HistoryDAO(dbPath);
 	}
 	
 	/**
