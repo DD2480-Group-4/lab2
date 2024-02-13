@@ -1,9 +1,16 @@
 plugins {
 	id("java")
+	id("application")
 }
+
+apply(plugin = "application")
 
 group = "group4"
 version = "1.0-SNAPSHOT"
+
+application {
+	mainClass = "ci.Main"
+}
 
 repositories {
 	mavenCentral()
