@@ -49,9 +49,9 @@ public class HistoryDAOTest {
 				"INSERT INTO senders (login, url, avatarUrl) VALUES ('johndoe', 'johndoeUrl', 'johndoeAvatarUrl')");
 
 		statement.addBatch(
-				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog', 'buildDate') VALUES (1, 1, 'Build Log 1', 10, 10, 'All test passed', '2021-01-01T00:00:00')");
+				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog', 'buildDate', 'branch') VALUES (1, 1, 'Build Log 1', 10, 10, 'All test passed', '2021-01-01T00:00:00', 'main')");
 		statement.addBatch(
-				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog', buildDate) VALUES (1, 0, 'Build Log 2', 10, 5, '5 test failed', '2021-01-02T00:00:00')");
+				"INSERT INTO history ('senderId', 'buildResult', 'buildLog', 'totalTests', 'numOfPassedTests', 'testLog', buildDate, 'branch') VALUES (1, 0, 'Build Log 2', 10, 5, '5 test failed', '2021-01-02T00:00:00', 'branch1')");
 
 		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 1)");
 		statement.addBatch("INSERT INTO historyCommits ('historyId', 'commitId') VALUES (1, 2)");
@@ -204,6 +204,7 @@ public class HistoryDAOTest {
 		Assertions.assertThat(buildInfo).isNotNull();
 		Assertions.assertThat(buildInfo.getId()).isEqualTo(historyId);
 		Assertions.assertThat(buildInfo.getBuildDate()).isEqualTo("2021-01-01T00:00:00");
+		Assertions.assertThat(buildInfo.getBranch()).isEqualTo("main");
 
 		ci.PushPayload.Sender sender = buildInfo.getSender();
 		Assertions.assertThat(sender).isNotNull();
@@ -271,6 +272,8 @@ public class HistoryDAOTest {
 		Assertions.assertThat(buildInfo).isNotNull();
 		Assertions.assertThat(buildInfo.getId()).isEqualTo(1);
 		Assertions.assertThat(buildInfo.getBuildDate()).isEqualTo("2021-01-01T00:00:00");
+		Assertions.assertThat(buildInfo.getBranch()).isEqualTo("main");
+
 
 		ci.PushPayload.Sender sender = buildInfo.getSender();
 		Assertions.assertThat(sender).isNotNull();
@@ -315,6 +318,8 @@ public class HistoryDAOTest {
 		Assertions.assertThat(buildInfo).isNotNull();
 		Assertions.assertThat(buildInfo.getId()).isEqualTo(2);
 		Assertions.assertThat(buildInfo.getBuildDate()).isEqualTo("2021-01-02T00:00:00");
+		Assertions.assertThat(buildInfo.getBranch()).isEqualTo("branch1");
+
 
 		sender = buildInfo.getSender();
 		Assertions.assertThat(sender).isNotNull();
@@ -416,7 +421,7 @@ public class HistoryDAOTest {
 		ci.PushPayload.Sender senderToAdd = new ci.PushPayload.Sender("test", "testUrl", "testAvatarUrl");
 		ci.BuildInfo.BuildDetails buildDetailsToAdd = new ci.BuildInfo.BuildDetails(1, "Build Log 1");
 		ci.BuildInfo.TestDetails testDetailsToAdd = new ci.BuildInfo.TestDetails(10, 10, "All test passed");
-		BuildInfo buildInfoToAdd = new BuildInfo(0, senderToAdd, commitToAdd, buildDetailsToAdd, testDetailsToAdd, "2021-01-01T00:00:00");
+		BuildInfo buildInfoToAdd = new BuildInfo(0, senderToAdd, commitToAdd, buildDetailsToAdd, testDetailsToAdd, "2021-01-01T00:00:00", "branch2");
 
 		int id = historyDAO.addHistory(buildInfoToAdd);
 
@@ -424,6 +429,8 @@ public class HistoryDAOTest {
 		Assertions.assertThat(buildInfo).isNotNull();
 		Assertions.assertThat(buildInfo.getId()).isEqualTo(id);
 		Assertions.assertThat(buildInfo.getBuildDate()).isEqualTo("2021-01-01T00:00:00");
+		Assertions.assertThat(buildInfo.getBranch()).isEqualTo("branch2");
+
 
 		List<ci.PushPayload.Commit> commits = buildInfo.getCommitList();
 		Assertions.assertThat(commits).hasSize(1);

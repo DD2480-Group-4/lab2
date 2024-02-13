@@ -93,7 +93,7 @@ public class Main extends AbstractHandler {
 				TestDetails testDetails = new TestDetails(result.totalTests(), result.passedTests(), testOutput.toString());
 				BuildInfo buildInfo = new BuildInfo(payload.getSender(),
 						Arrays.asList(payload.getCommits()),
-						buildDetails, testDetails, payload.getPushedAt());
+						buildDetails, testDetails, payload.getPushedAt(), payload.getBranch());
 
 				historyDAO.addHistory(buildInfo);
 			} catch (GitAPIException err) {
@@ -123,7 +123,7 @@ public class Main extends AbstractHandler {
 					if (!target.startsWith("/build_")) {
 						for (BuildInfo build : history) {
 							response.getWriter().println("<a href=\"/build_" + build.getId() + "/\">Build Info "
-									+ build.getId() + "</a><br>");
+									+ build.getId() + " - Branch: "+ build.getBranch() + "</a><br>");
 						}
 					}
 					// Display build info for specific build if link is clicked
