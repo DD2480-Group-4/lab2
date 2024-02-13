@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import ci.Builder.BuildResults;
+
 import javax.servlet.ServletException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,7 +61,7 @@ public class MainTest {
 		Mockito.when(notifier.setCommitStatus(Mockito.any(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
 
 		Mockito.doNothing().when(builder).cloneTargetRepo(Mockito.anyString(), Mockito.anyString());
-		Mockito.when(builder.buildAndTest()).thenReturn(CommitStatuses.success);
+		Mockito.when(builder.buildAndTest()).thenReturn(new BuildResults(CommitStatuses.success, 10, 10));
 		Mockito.doNothing().when(builder).close(); //It is closed by the try-with-resources statement.
 
 		Mockito.when(historyDAO.addHistory(Mockito.any())).thenReturn(1);

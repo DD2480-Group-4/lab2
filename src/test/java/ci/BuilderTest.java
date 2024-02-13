@@ -131,7 +131,8 @@ public class BuilderTest {
 	void buildAndTestProject() {
 		var buildDir = Path.of("./src/test/resources/build_success");
 		try (var builder = new Builder(buildDir, System.out, System.out)) {
-			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.success);
+			var expectedResult = new ci.Builder.BuildResults(CommitStatuses.success, 1, 1);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(expectedResult);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -149,7 +150,8 @@ public class BuilderTest {
 	void buildProjectAndFailTest() {
 		var buildDir = Path.of("./src/test/resources/build_success_test_fail");
 		try (var builder = new Builder(buildDir, System.out, System.out)) {
-			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.error);
+			var expectedResult = new ci.Builder.BuildResults(CommitStatuses.error, 1, 0);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(expectedResult);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -168,7 +170,8 @@ public class BuilderTest {
 	void buildFail() {
 		var buildDir = Path.of("./src/test/resources/build_fail");
 		try (var builder = new Builder(buildDir, System.out, System.out)) {
-			Assertions.assertThat(builder.buildAndTest()).isEqualTo(CommitStatuses.failure);
+			var expectedResult = new ci.Builder.BuildResults(CommitStatuses.failure, 0, 0);
+			Assertions.assertThat(builder.buildAndTest()).isEqualTo(expectedResult);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

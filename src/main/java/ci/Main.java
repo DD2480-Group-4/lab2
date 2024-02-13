@@ -35,7 +35,6 @@ import java.util.stream.Stream;
  * Main executable for Continuous-Integration handler
  */
 public class Main extends AbstractHandler {
-	private final Pattern testResultPattern = Pattern.compile("<div class=\"counter\">[0-9]+</div>");
 
 	@Override
 	public void handle(
@@ -81,26 +80,17 @@ public class Main extends AbstractHandler {
 			try (var builder = createBuilder(buildPath, buildAndStdOut, testAndStdOut)) {
 				builder.cloneTargetRepo(payload.getCloneUrl(), payload.getBranch());
 				var result = builder.buildAndTest();
-				var desc = switch (result) {
+				var desc = switch (result.status()) {
 					case error -> "Tests failed";
 					case failure -> "Build failed";
 					case pending -> "Wait what happened here????????????????";
 					case success -> "Build successful!";
 				};
-				notifier.setCommitStatus(result, desc, accessUrl);
+				notifier.setCommitStatus(result.status(), desc, accessUrl);
 
-				BuildDetails buildDetails = new BuildDetails(result.ordinal(), buildOutput.toString());
+				BuildDetails buildDetails = new BuildDetails(result.status().ordinal(), buildOutput.toString());
 
-				String testResultFile = Files.readString(buildPath.resolve("build/reports/tests/test/index.html"));
-
-				Matcher matcher = testResultPattern.matcher(testResultFile);
-
-				matcher.find();
-				int totalTests = Integer.parseInt(matcher.group().split(">")[1].split("<")[0]);
-				matcher.find();
-				int failedTests = Integer.parseInt(matcher.group().split(">")[1].split("<")[0]);
-
-				TestDetails testDetails = new TestDetails(totalTests, totalTests - failedTests, testOutput.toString());
+				TestDetails testDetails = new TestDetails(result.totalTests(), result.passedTests(), testOutput.toString());
 				BuildInfo buildInfo = new BuildInfo(payload.getSender(),
 						Arrays.asList(payload.getCommits()),
 						buildDetails, testDetails, payload.getPushedAt());
