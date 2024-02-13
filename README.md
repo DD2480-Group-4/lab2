@@ -23,13 +23,17 @@ To setup the GitHub webhook go to your public repository, select settings and th
 ![GitHub Webhook settings](Assets/WebhookSetup.png)
 
 ### Web Interface 
+CI HISTORY: [https://loving-perfectly-mako.ngrok-free.app](http://loving-perfectly-mako.ngrok-free.app)
+
 TODO: Display web interface functions
 
 # Statement of Contributions:
 All contributions of features and fixes includes accompanying tests.
 
 #### Shared amongst the team
-* Server listens to and parses webhook requests
+* Server listens to and parses webhook requests.
+* Code reviews.
+* Squash & Merges of pull requests. 
 
 #### Douglas Fischer (DouglasFischer):
 * Clone and cleanup repository.
@@ -51,6 +55,6 @@ All contributions of features and fixes includes accompanying tests.
 * README.md 
 
 ### Prideful Remark
-The history is built with a SQLite database with multiple tables and an accompanying data access object (DAO). The database can handle the edge cases of a commit being part of two different pushes without duplicating the commit entry. 
+The history is built with a SQLite database with multiple tables and an accompanying data access object (DAO). The DAO makes sure each sender and author is only added once to the database. The database can also handle the edge cases of a commit being part of two different pushes without duplicating the commit entry. 
 
 ![Database relations](Assets/database.png)
