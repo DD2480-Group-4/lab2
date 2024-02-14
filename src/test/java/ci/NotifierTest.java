@@ -64,7 +64,7 @@ public class NotifierTest {
 
 		Assertions.assertThat(httpStatus).isTrue();
 
-		String expectedSha = "17a4c2ec28144d4b195d2e7dee7e605f66ce65f8";
+		String expectedSha = "17a4c2ec28144d4b195d2e7dee7e605f66ce65f9";
 		String expectedState = String.valueOf(CommitStatuses.success);
 		Assertions.assertThat(out.toString().stripTrailing()).isEqualTo("Status of commit \"" + expectedSha + "\" was successfully updated to: \"" + expectedState + "\"!");
 		Mockito.verify(mockClient, Mockito.times(1)).send(Mockito.any(), Mockito.any());
